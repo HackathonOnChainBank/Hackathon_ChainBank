@@ -34,3 +34,4 @@ npm install --save-dev eslint prettier
 | @vitejs/plugin-react   | Vite React 支援             |
 | typescript, @types/*   | TypeScript 支援（如有需要） |
 | eslint, prettier       | 程式碼檢查/格式化（選用）   |
+|                        |
