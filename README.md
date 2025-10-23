@@ -35,3 +35,17 @@ npm install --save-dev eslint prettier
 | typescript, @types/*   | TypeScript 支援（如有需要） |
 | eslint, prettier       | 程式碼檢查/格式化（選用）   |
 |                        |
+
+## 開發方式
+
+```bash
+Clone - https://github.com/HackathonOnChainBank/Hackathon_ChainBank.git
+Branch
+1. main - 主要分支
+2. develop - 測試分支
+```
+```bash
+分支規範
+開發前請先基於develop 分支新建feature 分支，異動完後在到本地commit 確認無誤後在push 到develop
+```
+
