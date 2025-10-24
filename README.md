@@ -18,6 +18,7 @@ npm install --save-dev @vitejs/plugin-react
 ```bash
 npm install --save-dev typescript @types/react @types/react-dom
 npm install --save-dev eslint prettier
+npm install @openzeppelin/contracts
 ```
 
 ## 套件用途簡述
@@ -44,8 +45,8 @@ Branch
 1. main - 主要分支
 2. develop - 測試分支
 ```
+
 ```bash
 分支規範
 開發前請先基於develop 分支新建feature 分支，異動完後在到本地commit 確認無誤後在push 到develop
 ```
-
