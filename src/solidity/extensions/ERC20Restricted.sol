@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.26;
+pragma solidity ^0.8.20;
 
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
@@ -91,6 +91,9 @@ abstract contract ERC20Restricted is ERC20 {
 
     /// @dev Checks if a user account is restricted. Reverts with {ERC20Restricted} if so.
     function _checkRestriction(address account) internal view virtual {
-        require(isUserAllowed(account), ERC20UserRestricted(account));
+        if (!isUserAllowed(account)) {
+        revert ERC20UserRestricted(account);
+    }
+
     }
 }
