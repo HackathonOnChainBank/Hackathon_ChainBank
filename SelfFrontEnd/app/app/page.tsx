@@ -19,8 +19,12 @@ export default function Home() {
   const [selfApp, setSelfApp] = useState<SelfApp | null>(null);
   const [universalLink, setUniversalLink] = useState("");
   const [userId] = useState(ethers.ZeroAddress);
-  // Use useMemo to cache the array to avoid creating a new array on each render
-  const excludedCountries = useMemo(() => [countries.UNITED_STATES], []);
+  // 排除不是台灣人
+  const allCountries = Object.values(countries);
+  const excludedCountries = useMemo(
+  () => allCountries.filter(c => c !== countries.TAIWAN),
+  []
+  );
 
   // Use useEffect to ensure code only executes on the client side
   useEffect(() => {
@@ -46,7 +50,7 @@ export default function Home() {
           // issuing_state: true,
           // nationality: true,
           // date_of_birth: true,
-          // passport_number: false,
+          // passport_number: fㄉalse,
           // gender: true,
           // expiry_date: false,
         }
