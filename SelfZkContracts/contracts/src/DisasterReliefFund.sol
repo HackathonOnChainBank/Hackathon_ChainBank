@@ -15,7 +15,7 @@ import "./interface/IERC20.sol";
  * @notice Test implementation of SelfVerificationRoot for testing purposes
  * @dev This contract provides a concrete implementation of the abstract SelfVerificationRoot
  */
-contract DisaterReliefFund is SelfVerificationRoot, Ownable {
+contract DisasterReliefFund is SelfVerificationRoot, Ownable {
 
     //用於bounty 的 ERC20 代幣
     IERC20 public immutable NTD_TOKEN;
@@ -54,6 +54,7 @@ contract DisaterReliefFund is SelfVerificationRoot, Ownable {
         SelfUtils.UnformattedVerificationConfigV2 memory _verificationConfig
     )
         SelfVerificationRoot(identityVerificationHubV2Address, scope)
+        Ownable(msg.sender)
     {
         verificationConfig = SelfUtils.formatVerificationConfigV2(_verificationConfig);
         verificationConfigId = IIdentityVerificationHubV2(identityVerificationHubV2Address).setVerificationConfigV2(verificationConfig);

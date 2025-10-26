@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Deploy Proof of Human Contract Script
+# Deploy DeployDisasterReliefFund Contract Script
 # Based on the Self SBT deployment workflow
 
 set -e  # Exit on error
@@ -42,7 +42,7 @@ for var in "${REQUIRED_VARS[@]}"; do
 done
 
 # Set defaults for optional variables
-SCOPE_SEED=${SCOPE_SEED:-"self-workshop"}
+SCOPE_SEED=${SCOPE_SEED:-"onchain-bank"}
 NETWORK=${NETWORK:-"celo-sepolia"}
 
 # Network configuration
@@ -106,14 +106,14 @@ export SCOPE_SEED
 # Deploy contract
 print_info "Deploying DisasterReliefFund contract with scope seed: $SCOPE_SEED"
 
-DEPLOY_CMD="forge script script/DisasterReliefFund.s.sol:DisasterReliefFund --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast"
+DEPLOY_CMD="forge script script/DeployDisasterReliefFund.s.sol:DeployDisasterReliefFund --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast"
 
 echo "🚀 Step 1: Executing deployment..."
 eval $DEPLOY_CMD
 
 if [ $? -ne 0 ]; then
     # Check if deployment actually succeeded despite exit code error
-    if [[ -f "broadcast/DisasterReliefFund.s.sol/$CHAIN_ID/run-latest.json" ]]; then
+    if [[ -f "broadcast/DeployDisasterReliefFund.s.sol/$CHAIN_ID/run-latest.json" ]]; then
         print_success "Contract deployment completed (ignoring wallet warnings)"
     else
         print_error "Contract deployment failed"
@@ -122,9 +122,9 @@ if [ $? -ne 0 ]; then
 fi
 
 # Extract deployed contract address
-BROADCAST_DIR="broadcast/DisasterReliefFund.s.sol/$CHAIN_ID"
+BROADCAST_DIR="broadcast/DeployDisasterReliefFund.s.sol/$CHAIN_ID"
 if [[ -f "$BROADCAST_DIR/run-latest.json" ]]; then
-    CONTRACT_ADDRESS=$(jq -r '.transactions[] | select(.contractName == "DisasterReliefFund") | .contractAddress' "$BROADCAST_DIR/run-latest.json" | head -1)
+    CONTRACT_ADDRESS=$(jq -r '.transactions[] | select(.contractName == "DeployDisasterReliefFund") | .contractAddress' "$BROADCAST_DIR/run-latest.json" | head -1)
     
     if [[ -n "$CONTRACT_ADDRESS" && "$CONTRACT_ADDRESS" != "null" ]]; then
         print_success "Contract deployed at: $CONTRACT_ADDRESS"
