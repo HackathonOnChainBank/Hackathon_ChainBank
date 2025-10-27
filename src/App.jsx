@@ -5,6 +5,7 @@ import DepositPage from './pages/DepositPage'
 import KYCPage from './pages/KYCPage'
 import CreditCardPage from './pages/CreditCardPage'
 import AdminPage from './pages/AdminPage'
+import DisasterReliefPage from './pages/DisasterReliefPage'
 import './App.css'
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         <Route path="/kyc" element={<KYCPage />} />
         <Route path="/creditcard" element={<CreditCardPage />} />
         <Route path="/admin" element={<AdminPage />} />
+        <Route path="/disaster" element={<DisasterReliefPage />} />
       </Routes>
     </div>
   )

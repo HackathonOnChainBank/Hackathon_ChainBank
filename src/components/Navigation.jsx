@@ -21,6 +21,10 @@ function Navigation() {
             首頁
           </Link>
           
+          <Link to="/disaster" className={isActive('/disaster') ? 'active' : ''}>
+            災難救助
+          </Link>
+          
           {isAuthenticated && (
             <>
               {role === 'user' && (
