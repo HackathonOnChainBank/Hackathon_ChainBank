@@ -28,6 +28,29 @@ import RevokeRoleComponent from '../components/RevokeRoleComponent';
 import RenounceRoleComponent from '../components/RenounceRoleComponent';
 import BurnFromComponent from '../components/BurnFromComponent';
 import AllowAccountComponent from '../components/AllowAccountComponent';
+import BankAdminComponent from '../components/BankAdminComponent';
+import DepositsComponent from '../components/DepositsComponent';
+import GetAllUsersComponent from '../components/GetAllUsersComponent';
+import GetAllActiveDepositsComponent from '../components/GetAllActiveDepositsComponent';
+import GetAllExpiredDepositComponent from '../components/GetAllExpiredDepositComponent';
+import GetUserDepositsComponent from '../components/GetUserDepositsComponent';
+import LastWithdrawTimeComponent from '../components/LastWithdrawTimeComponent';
+import NtdComponent from '../components/NtdComponent';
+import UsersComponent from '../components/UsersComponent';
+import BatchWithdrawDepositComponent from '../components/BatchWithdrawDepositComponent';
+import CreateDepositComponent from '../components/CreateDepositComponent';
+import SendInterestComponent from '../components/SendInterestComponent';
+import SendInterestBatchComponent from '../components/SendInterestBatchComponent';
+import WithdrawDepositComponent from '../components/WithdrawDepositComponent';
+import WithdrawDepositsComponent from '../components/WithdrawDepositsComponent';
+import BankAdminComponentCC from '../components/BankAdminComponentCC';
+import CreditsComponent from '../components/CreditsComponent';
+import GetSpendRecordsComponent from '../components/GetSpendRecordsComponent';
+import NtdComponentCC from '../components/NtdComponentCC';
+import SpendRecordsComponent from '../components/SpendRecordsComponent';
+import RepayComponent from '../components/RepayComponent';
+import SetCreditLimitComponent from '../components/SetCreditLimitComponent';
+import SpendComponent from '../components/SpendComponent';
 
 function TestPage() {
   return (
@@ -66,6 +89,33 @@ function TestPage() {
       <RenounceRoleComponent />
       <BurnFromComponent />
       <AllowAccountComponent />
+      <h2><br></br>Deposit</h2>
+      {/* config/Deposit/ 組件 */}
+      <BankAdminComponent />
+      <DepositsComponent />
+      <GetAllUsersComponent />
+      <GetAllActiveDepositsComponent />
+      <GetAllExpiredDepositComponent />
+      <GetUserDepositsComponent />
+      <LastWithdrawTimeComponent />
+      <NtdComponent />
+      <UsersComponent />
+      <BatchWithdrawDepositComponent />
+      <CreateDepositComponent />
+      <SendInterestComponent />
+      <SendInterestBatchComponent />
+      <WithdrawDepositComponent />
+      <WithdrawDepositsComponent />
+      <h2><br></br>CreditCard</h2>
+      {/* config/CreditCard/ 組件 */}
+      <BankAdminComponentCC />
+      <CreditsComponent />
+      <GetSpendRecordsComponent />
+      <NtdComponentCC />
+      <SpendRecordsComponent />
+      <RepayComponent />
+      <SetCreditLimitComponent />
+      <SpendComponent />
     </div>
   );
 }
