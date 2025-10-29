@@ -4,40 +4,54 @@ pragma solidity ^0.8.20;
 import {NTD_TOKEN} from "./NTD_TOKEN.sol";
 
 contract CreditCardProduct {
-    NTD_TOKEN public ntd;
-    address public bankAdmin;
+    NTD_TOKEN public ntd;                           // NTD_TOKEN主合約
+    address public bankAdmin;                       // 銀行管理員
 
     struct CreditInfo {
-        uint256 limit;
-        uint256 balance;
-        uint256 lastBillTime;
-        uint256 interest;
+        uint256 limit;          // 信用卡總額度
+        uint256 balance;        // 未還款累積金額（欠款）
+        uint256 lastBillTime;   // 上次結帳時間
     }
     mapping(address => CreditInfo) public credits;
+
+    struct SpendRecord {
+        address merchant;       // 消費商家
+        uint256 amount;         // 單筆消費金額
+        uint256 timestamp;      // 消費時間
+    }
+    mapping(address => SpendRecord[]) public spendRecords;
 
     constructor(address _ntd, address _bankAdmin) {
         ntd = NTD_TOKEN(_ntd);
         bankAdmin = _bankAdmin;
     }
 
+    // 設定用戶信用額度
     function setCreditLimit(address user, uint256 amount) external {
         require(msg.sender == bankAdmin, "Only bank");
         credits[user].limit = amount;
     }
 
-    function spend(address user, uint256 amount) external {
+    // 刷卡消費：合約直接先付款給商家，用戶累積欠款
+    function spend(address user, address merchant, uint256 amount) external {
         require(msg.sender == bankAdmin, "Only bank");
         require(credits[user].balance + amount <= credits[user].limit, "Over limit");
         credits[user].balance += amount;
-        // 銀行主控付款流程（如消費交易）
+        require(ntd.balanceOf(address(this)) >= amount, "Insufficient contract liquidity");
+        ntd.transfer(merchant, amount); // 合約直付給商家，模擬信用卡先墊付
+        spendRecords[user].push(SpendRecord(merchant, amount, block.timestamp));
     }
 
+    // 用戶還款，還款金額歸合約（可拓展手續費邏輯）
     function repay(address user, uint256 amount) external {
         require(msg.sender == bankAdmin, "Only bank");
         require(credits[user].balance >= amount, "Repay over balance");
         credits[user].balance -= amount;
-        ntd.transferFrom(user, bankAdmin, amount); // 實際資金流
+        ntd.transferFrom(user, address(this), amount); // 用戶還款給合約
     }
 
-    // 可根據銀行業務擴充分期、罰息、活動通路等
+    // 查詢用戶所有刷卡消費紀錄流水
+    function getSpendRecords(address user) external view returns (SpendRecord[] memory) {
+        return spendRecords[user];
+    }
 }

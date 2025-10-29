@@ -9,7 +9,7 @@ const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 const contractAddress = process.env.VITE_NTD_TOKEN_CONTRACT_ADDRESS;
 
 // 2️⃣ 匯入 ABI（確保 ABI 內真的有 mint 函式）
-const { ABI } = await import("./NTD_TOKEN_ABI.js");
+const { ABI } = await import("../NTD_TOKEN_ABI.js");
 const contract = new ethers.Contract(contractAddress, ABI, wallet);
 
 // 3️⃣ 使用 readline 互動式輸入

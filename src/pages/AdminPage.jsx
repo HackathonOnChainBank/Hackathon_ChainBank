@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './AdminPage.css';
+import WalrusUploader from '../components/WalrusUploader';
 
 function AdminPage() {
   const [pendingApprovals] = useState([
@@ -51,6 +52,11 @@ function AdminPage() {
             <p className="stat-value">{systemStats.pendingApprovals}</p>
           </div>
         </div>
+      </div>
+
+      <div className="section">
+        <h2>Walrus 檔案上傳與區塊鏈記錄</h2>
+        <WalrusUploader />
       </div>
 
       <div className="section">
