@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { ABI } from '../config/NTD_TOKEN_ABI.js';
 
-const TransferComponent = () => {
+const MintComponent = () => {
   const [contract, setContract] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -37,7 +37,7 @@ const TransferComponent = () => {
     initContract();
   }, []);
 
-  const handleTransfer = async () => {
+  const handleMint = async () => {
     setLoading(true);
     setError('');
     setSuccess('');
@@ -51,16 +51,16 @@ const TransferComponent = () => {
         throw new Error('請輸入接收地址和金額');
       }
 
-      const tx = await contract.transfer(to, ethers.parseUnits(amount, 18));
+      const tx = await contract.mint(to, ethers.parseUnits(amount, 18));
       setSuccess(`交易已送出: ${tx.hash}`);
       const receipt = await tx.wait();
       if (receipt.status === 1) {
-        setSuccess('轉帳成功！');
-        console.log('Transfer 成功，回傳收據:', receipt);
+        setSuccess('鑄幣成功！');
+        console.log('Mint 成功，回傳收據:', receipt);
       }
 
     } catch (err) {
-      console.error('Transfer 調用錯誤:', err);
+      console.error('Mint 調用錯誤:', err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -68,8 +68,8 @@ const TransferComponent = () => {
   };
 
   return (
-    <div className="transfer-container">
-      <h2>Transfer 轉帳</h2>
+    <div className="mint-container">
+      <h2>Mint 鑄幣</h2>
       
       {error && (
         <div className="error-message">
@@ -97,13 +97,13 @@ const TransferComponent = () => {
       />
       
       <button 
-        onClick={handleTransfer}
+        onClick={handleMint}
         disabled={loading || !contract}
       >
-        {loading ? '處理中...' : '執行 Transfer'}
+        {loading ? '處理中...' : '執行 Mint'}
       </button>
     </div>
   );
 };
 
-export default TransferComponent;
+export default MintComponent;

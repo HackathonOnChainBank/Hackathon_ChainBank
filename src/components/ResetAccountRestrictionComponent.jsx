@@ -2,13 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { ABI } from '../config/NTD_TOKEN_ABI.js';
 
-const TransferComponent = () => {
+const ResetAccountRestrictionComponent = () => {
   const [contract, setContract] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [to, setTo] = useState('');
-  const [amount, setAmount] = useState('');
+  const [account, setAccount] = useState('');
 
   useEffect(() => {
     console.log('VITE_RPC_URL:', import.meta.env.VITE_RPC_URL);
@@ -37,7 +36,7 @@ const TransferComponent = () => {
     initContract();
   }, []);
 
-  const handleTransfer = async () => {
+  const handleResetAccountRestriction = async () => {
     setLoading(true);
     setError('');
     setSuccess('');
@@ -47,20 +46,20 @@ const TransferComponent = () => {
         throw new Error('合約未初始化');
       }
 
-      if (!to || !amount) {
-        throw new Error('請輸入接收地址和金額');
+      if (!account) {
+        throw new Error('請輸入地址');
       }
 
-      const tx = await contract.transfer(to, ethers.parseUnits(amount, 18));
+      const tx = await contract.resetAccountRestriction(account);
       setSuccess(`交易已送出: ${tx.hash}`);
       const receipt = await tx.wait();
       if (receipt.status === 1) {
-        setSuccess('轉帳成功！');
-        console.log('Transfer 成功，回傳收據:', receipt);
+        setSuccess('重設成功！');
+        console.log('ResetAccountRestriction 成功，回傳收據:', receipt);
       }
 
     } catch (err) {
-      console.error('Transfer 調用錯誤:', err);
+      console.error('ResetAccountRestriction 調用錯誤:', err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -68,8 +67,8 @@ const TransferComponent = () => {
   };
 
   return (
-    <div className="transfer-container">
-      <h2>Transfer 轉帳</h2>
+    <div className="reset-restriction-container">
+      <h2>ResetAccountRestriction 重設限制</h2>
       
       {error && (
         <div className="error-message">
@@ -85,25 +84,19 @@ const TransferComponent = () => {
 
       <input
         type="text"
-        value={to}
-        onChange={(e) => setTo(e.target.value)}
-        placeholder="接收地址"
-      />
-      <input
-        type="text"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        placeholder="金額"
+        value={account}
+        onChange={(e) => setAccount(e.target.value)}
+        placeholder="地址"
       />
       
       <button 
-        onClick={handleTransfer}
+        onClick={handleResetAccountRestriction}
         disabled={loading || !contract}
       >
-        {loading ? '處理中...' : '執行 Transfer'}
+        {loading ? '處理中...' : '執行 ResetAccountRestriction'}
       </button>
     </div>
   );
 };
 
-export default TransferComponent;
+export default ResetAccountRestrictionComponent;

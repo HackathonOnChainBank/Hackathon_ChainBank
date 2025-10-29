@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { ABI } from '../config/NTD_TOKEN_ABI.js';
 
-const TransferComponent = () => {
+const RevokeRoleComponent = () => {
   const [contract, setContract] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [to, setTo] = useState('');
-  const [amount, setAmount] = useState('');
+  const [role, setRole] = useState('');
+  const [account, setAccount] = useState('');
 
   useEffect(() => {
     console.log('VITE_RPC_URL:', import.meta.env.VITE_RPC_URL);
@@ -37,7 +37,7 @@ const TransferComponent = () => {
     initContract();
   }, []);
 
-  const handleTransfer = async () => {
+  const handleRevokeRole = async () => {
     setLoading(true);
     setError('');
     setSuccess('');
@@ -47,20 +47,20 @@ const TransferComponent = () => {
         throw new Error('合約未初始化');
       }
 
-      if (!to || !amount) {
-        throw new Error('請輸入接收地址和金額');
+      if (!role || !account) {
+        throw new Error('請輸入角色和地址');
       }
 
-      const tx = await contract.transfer(to, ethers.parseUnits(amount, 18));
+      const tx = await contract.revokeRole(role, account);
       setSuccess(`交易已送出: ${tx.hash}`);
       const receipt = await tx.wait();
       if (receipt.status === 1) {
-        setSuccess('轉帳成功！');
-        console.log('Transfer 成功，回傳收據:', receipt);
+        setSuccess('撤銷成功！');
+        console.log('RevokeRole 成功，回傳收據:', receipt);
       }
 
     } catch (err) {
-      console.error('Transfer 調用錯誤:', err);
+      console.error('RevokeRole 調用錯誤:', err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -68,8 +68,8 @@ const TransferComponent = () => {
   };
 
   return (
-    <div className="transfer-container">
-      <h2>Transfer 轉帳</h2>
+    <div className="revoke-role-container">
+      <h2>RevokeRole 撤銷角色</h2>
       
       {error && (
         <div className="error-message">
@@ -85,25 +85,25 @@ const TransferComponent = () => {
 
       <input
         type="text"
-        value={to}
-        onChange={(e) => setTo(e.target.value)}
-        placeholder="接收地址"
+        value={role}
+        onChange={(e) => setRole(e.target.value)}
+        placeholder="輸入角色 (bytes32 hex)"
       />
       <input
         type="text"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        placeholder="金額"
+        value={account}
+        onChange={(e) => setAccount(e.target.value)}
+        placeholder="輸入地址"
       />
       
       <button 
-        onClick={handleTransfer}
+        onClick={handleRevokeRole}
         disabled={loading || !contract}
       >
-        {loading ? '處理中...' : '執行 Transfer'}
+        {loading ? '處理中...' : '執行 RevokeRole'}
       </button>
     </div>
   );
 };
 
-export default TransferComponent;
+export default RevokeRoleComponent;
