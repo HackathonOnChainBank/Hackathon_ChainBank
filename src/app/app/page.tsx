@@ -18,9 +18,13 @@ export default function Home() {
   const [toastMessage, setToastMessage] = useState("");
   const [selfApp, setSelfApp] = useState<SelfApp | null>(null);
   const [universalLink, setUniversalLink] = useState("");
-  const [userId] = useState("0x5199574A9004171C654fF4F679eBfaDDF8e1fBB4");
+  const [userId] = useState(ethers.ZeroAddress);
   // 排除不是台灣人
-  const excludedCountries = useMemo(() => [countries.UNITED_STATES], []);
+  const allCountries = Object.values(countries);
+  const excludedCountries = useMemo(
+  () => allCountries.filter(c => c !== countries.TAIWAN),
+  []
+  );
 
   // Use useEffect to ensure code only executes on the client side
   useEffect(() => {
@@ -88,42 +92,28 @@ export default function Home() {
     displayToast("Opening Self App...");
   };
 
-  const handleSuccessfulVerification = () => {
-    displayToast("Verification successful! Redirecting...");
+  const handleSuccessfulVerification = (verificationData?: any) => {
+    displayToast("Verification successful!");
     
-    // 如果是在 popup 視窗中被打開（有 window.opener），發送驗證結果回主視窗
-    if (window.opener) {
-      try {
-        window.opener.postMessage(
-          {
-            type: 'SELF_VERIFICATION_SUCCESS',
-            data: {
-              verified: true,
-              timestamp: new Date().toISOString(),
-              nullifier: '0x' + '01'.repeat(32), // TODO: 從 SDK 取得實際的 nullifier
-              userIdentifier: userId,
-              proof: 'SELF_VERIFICATION_PROOF_' + Date.now()
-            }
-          },
-          '*' // 在生產環境中，應該指定確切的 origin
-        );
-        console.log('Verification result sent to parent window');
-        
-        // 延遲關閉視窗，讓使用者看到成功訊息
-        setTimeout(() => {
-          window.close();
-        }, 1500);
-      } catch (error) {
-        console.error('Failed to send message to parent:', error);
-        // 如果無法關閉視窗，則導向到 verified 頁面
-        setTimeout(() => {
-          router.push("/verified");
-        }, 1500);
-      }
-    } else {
-      // 如果不是在 popup 中，正常導向到 verified 頁面
+    // If this page was opened as a popup from the main app, send result back
+    if (window.opener && !window.opener.closed) {
+      window.opener.postMessage({
+        type: 'SELF_VERIFICATION_SUCCESS',
+        data: verificationData || {
+          verified: true,
+          timestamp: Date.now(),
+          // Add any verification proof/data from Self SDK here
+        }
+      }, '*'); // In production, specify the exact origin of your main app
+      
+      // Close this popup after sending result
       setTimeout(() => {
-        router.push("/verified");
+        window.close();
+      }, 1500);
+    } else {
+      // Standalone mode: redirect to disaster page
+      setTimeout(() => {
+        router.push("/disaster");
       }, 1500);
     }
   };
