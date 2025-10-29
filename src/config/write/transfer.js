@@ -6,7 +6,7 @@ dotenv.config();
 const provider = new ethers.JsonRpcProvider(process.env.VITE_RPC_URL);
 const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 const contractAddress = process.env.VITE_NTD_TOKEN_CONTRACT_ADDRESS;
-const { ABI } = await import("./NTD_TOKEN_ABI.js");
+const { ABI } = await import("../NTD_TOKEN_ABI.js");
 const contract = new ethers.Contract(contractAddress, ABI, wallet);
 
 // 建立命令行介面

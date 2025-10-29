@@ -10,19 +10,19 @@ const contractAddress = process.env.VITE_CREDITCARD_CONTRACT_ADDRESS;
 const contract = new ethers.Contract(contractAddress, ABI, wallet);
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-function ask(q) { return new Promise(res=>rl.question(q, res)); }
+function ask(q) { return new Promise(res => rl.question(q, res)); }
 
 async function main() {
-  const user = await ask("輸入用戶地址: ");
-  const amount = await ask("輸入消費金額（wei）: ");
-  rl.close();
-
-  try {
-    const tx = await contract.spend(user, amount);
-    await tx.wait();
-    console.log("消費入帳成功，Tx:", tx.hash);
-  } catch (err) {
-    console.error("消費失敗:", err.reason || err.message);
-  }
+    const user = await ask("輸入用戶地址: ");
+    const merchant = await ask("輸入商家地址: ");
+    const amount = await ask("輸入刷卡金額（wei）: ");
+    rl.close();
+    try {
+        const tx = await contract.spend(user, merchant, amount);
+        await tx.wait();
+        console.log("刷卡成功，Tx:", tx.hash);
+    } catch (err) {
+        console.error("刷卡失敗:", err.reason || err.message);
+    }
 }
 main();

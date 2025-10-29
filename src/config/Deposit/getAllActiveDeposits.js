@@ -9,6 +9,10 @@ const contractAddress = process.env.VITE_DEPOSIT_CONTRACT_ADDRESS;
 const contract = new ethers.Contract(contractAddress, ABI, wallet);
 
 (async () => {
-    const ntd = await contract.ntd();
-    console.log("NTD Token address:", ntd);
+    try {
+        const [addresses, depositIds] = await contract.getAllActiveDeposits();
+        console.log("未提領定存:", addresses, depositIds);
+    } catch (err) {
+        console.error("查詢失敗:", err.reason || err.message);
+    }
 })();

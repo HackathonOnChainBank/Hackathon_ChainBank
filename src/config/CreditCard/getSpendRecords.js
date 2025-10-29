@@ -13,14 +13,12 @@ const rl = readline.createInterface({input: process.stdin, output: process.stdou
 const ask = q => new Promise(res=>rl.question(q, res));
 async function main() {
     const user = await ask("輸入用戶地址: ");
-    const amount = await ask("輸入還款金額（wei）: ");
     rl.close();
     try {
-        const tx = await contract.repay(user, amount);
-        await tx.wait();
-        console.log("Repay success! Tx:", tx.hash);
+        const records = await contract.getSpendRecords(user);
+        console.log("Spend records:", records);
     } catch (err) {
-        console.error("還款失敗:", err.reason || err.message);
+        console.error("查詢失敗:", err.reason || err.message);
     }
 }
 main();

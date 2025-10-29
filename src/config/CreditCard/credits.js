@@ -3,14 +3,22 @@ import readline from "readline";
 import dotenv from "dotenv";
 import { ABI } from "../CreditCardProduct_ABI.js";
 dotenv.config();
+
 const provider = new ethers.JsonRpcProvider(process.env.VITE_RPC_URL);
-const contract = new ethers.Contract(process.env.VITE_CREDITCARD_CONTRACT_ADDRESS, ABI, provider);
-const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-function ask(q) { return new Promise(res=>rl.question(q, res)); }
+const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+const contractAddress = process.env.VITE_CREDITCARD_CONTRACT_ADDRESS;
+const contract = new ethers.Contract(contractAddress, ABI, wallet);
+
+const rl = readline.createInterface({input: process.stdin, output: process.stdout});
+const ask = q => new Promise(res=>rl.question(q, res));
 async function main() {
-  const user = await ask("輸入用戶地址: ");
-  rl.close();
-  const info = await contract.credits(user);
-  console.log(info);
+    const user = await ask("輸入用戶地址: ");
+    rl.close();
+    try {
+        const credit = await contract.credits(user);
+        console.log("Credit info:", credit);
+    } catch (err) {
+        console.error("查詢失敗:", err.reason || err.message);
+    }
 }
 main();
