@@ -42,7 +42,6 @@ import CreateDepositComponent from '../components/CreateDepositComponent';
 import SendInterestComponent from '../components/SendInterestComponent';
 import SendInterestBatchComponent from '../components/SendInterestBatchComponent';
 import WithdrawDepositComponent from '../components/WithdrawDepositComponent';
-import WithdrawDepositsComponent from '../components/WithdrawDepositsComponent';
 import BankAdminComponentCC from '../components/BankAdminComponentCC';
 import CreditsComponent from '../components/CreditsComponent';
 import GetSpendRecordsComponent from '../components/GetSpendRecordsComponent';
@@ -105,7 +104,6 @@ function TestPage() {
       <SendInterestComponent />
       <SendInterestBatchComponent />
       <WithdrawDepositComponent />
-      <WithdrawDepositsComponent />
       <h2><br></br>CreditCard</h2>
       {/* config/CreditCard/ 組件 */}
       <BankAdminComponentCC />
