@@ -23,7 +23,7 @@ export default function DisasterReliefUI() {
     setStatus('opening_self')
 
     try {
-      const selfServiceUrl = import.meta.env.VITE_SELF_SERVICE_URL || 'http://localhost:3001'
+      const selfServiceUrl = import.meta.env.VITE_SELF_SERVICE_URL || 'http://localhost:3000'
       const popup = window.open(
         selfServiceUrl,
         'SelfVerification',

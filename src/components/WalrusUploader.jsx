@@ -4,6 +4,51 @@ import { ethers } from 'ethers'
 import { proofAbi, PROOF_CONTRACT_ADDRESS } from '../config/proofAbi'
 import './WalrusUploader.css'
 
+// 帶 fallback 的圖片組件
+function ImageWithFallback({ blobId, getAllPossibleUrls }) {
+  const [currentUrlIndex, setCurrentUrlIndex] = useState(0)
+  const [allUrls] = useState(() => getAllPossibleUrls(blobId).map(item => item.url))
+  const [showError, setShowError] = useState(false)
+
+  const handleError = () => {
+    if (currentUrlIndex < allUrls.length - 1) {
+      console.log(`URL ${currentUrlIndex + 1} 失敗，嘗試下一個...`)
+      setCurrentUrlIndex(currentUrlIndex + 1)
+    } else {
+      console.log('所有 URL 都失敗了')
+      setShowError(true)
+    }
+  }
+
+  if (showError) {
+    return (
+      <div style={{color: '#999', padding: '20px', textAlign: 'center', background: '#f5f5f5', borderRadius: '8px'}}>
+        無法從任何端點載入圖片
+        <div style={{fontSize: '12px', marginTop: '8px'}}>
+          已嘗試 {allUrls.length} 個不同的 URL
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <img 
+        src={allUrls[currentUrlIndex]} 
+        alt="Preview"
+        style={{maxWidth: '300px', borderRadius: '8px', border: '1px solid #ddd'}}
+        onError={handleError}
+        onLoad={() => console.log(`✓ 圖片載入成功 (URL ${currentUrlIndex + 1}):`, allUrls[currentUrlIndex])}
+      />
+      {currentUrlIndex > 0 && (
+        <div style={{fontSize: '12px', color: '#666', marginTop: '4px'}}>
+          使用備用端點 #{currentUrlIndex + 1}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function WalrusUploader() {
   const { address, isConnected } = useAccount()
   
@@ -15,9 +60,13 @@ export default function WalrusUploader() {
   const [submittingProof, setSubmittingProof] = useState(false)
   const [userFiles, setUserFiles] = useState([])
   const [loadingFiles, setLoadingFiles] = useState(false)
+  const [previewBlobId, setPreviewBlobId] = useState(null)
 
-  // Walrus API endpoint (需要根據實際情況調整)
-  const WALRUS_API_ENDPOINT = 'https://publisher.walrus-testnet.walrus.space'
+  // Walrus API endpoints
+  const WALRUS_PUBLISHER_ENDPOINT = 'https://publisher.walrus-testnet.walrus.space'
+  const WALRUS_AGGREGATOR_ENDPOINT = 'https://aggregator.walrus-testnet.walrus.space'
+  // 替代讀取端點（使用 Walrus Sites）
+  const WALRUS_SITES_ENDPOINT = 'https://blob.store'
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0]
@@ -41,7 +90,7 @@ export default function WalrusUploader() {
       const formData = new FormData()
       formData.append('file', file)
 
-      const response = await fetch(`${WALRUS_API_ENDPOINT}/v1/blobs`, {
+      const response = await fetch(`${WALRUS_PUBLISHER_ENDPOINT}/v1/store`, {
         method: 'PUT',
         body: file,
         headers: {
@@ -166,14 +215,52 @@ export default function WalrusUploader() {
     loadUserFiles()
   }, [isConnected, address])
 
-  const handleUploadAndSubmit = async () => {
-    const walrusResult = await uploadToWalrus()
-    if (walrusResult) {
-      // 等待一下再上鏈
-      setTimeout(() => {
-        submitProofToBlockchain()
-      }, 1000)
+  // 取得 Walrus 檔案的 URL
+  const getWalrusFileUrl = (blobId, useAlternative = false) => {
+    if (useAlternative) {
+      // 使用替代端點 (Walrus Sites)
+      return `${WALRUS_SITES_ENDPOINT}/${blobId}`
     }
+    // 使用官方 aggregator
+    return `${WALRUS_AGGREGATOR_ENDPOINT}/v1/blobs/${blobId}`
+  }
+  
+  // 取得所有可能的 URL（用於測試）
+  const getAllPossibleUrls = (blobId) => {
+    return [
+      {
+        name: 'Aggregator (官方)',
+        url: `${WALRUS_AGGREGATOR_ENDPOINT}/v1/blobs/${blobId}`
+      },
+      {
+        name: 'Walrus Sites',
+        url: `${WALRUS_SITES_ENDPOINT}/${blobId}`
+      },
+      {
+        name: 'Aggregator (簡化)',
+        url: `https://aggregator.walrus-testnet.walrus.space/${blobId}`
+      }
+    ]
+  }
+
+  // 判斷是否為圖片類型
+  const isImageType = (fileType) => {
+    return fileType && fileType.startsWith('image/')
+  }
+
+  // 判斷是否為影片類型
+  const isVideoType = (fileType) => {
+    return fileType && fileType.startsWith('video/')
+  }
+
+  // 打開預覽
+  const openPreview = (blobId) => {
+    setPreviewBlobId(blobId)
+  }
+
+  // 關閉預覽
+  const closePreview = () => {
+    setPreviewBlobId(null)
   }
 
   return (
@@ -227,14 +314,6 @@ export default function WalrusUploader() {
           >
             {submittingProof ? '提交中...' : '⛓️ 提交 Proof 到鏈上'}
           </button>
-
-          <button 
-            onClick={handleUploadAndSubmit}
-            disabled={!file || uploading || submittingProof || !isConnected}
-            className="btn-upload-and-submit"
-          >
-            {(uploading || submittingProof) ? '處理中...' : '🚀 一鍵上傳並上鏈'}
-          </button>
         </div>
 
         {/* 狀態顯示 */}
@@ -253,12 +332,49 @@ export default function WalrusUploader() {
                 <strong>Blob ID:</strong>
                 <code>{walrusResponse.newlyCreated?.blobObject?.blobId || walrusResponse.alreadyCertified?.blobId}</code>
               </div>
+              <div className="response-item">
+                <strong>可用的讀取 URL (點擊測試):</strong>
+                <div style={{marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px'}}>
+                  {getAllPossibleUrls(walrusResponse.newlyCreated?.blobObject?.blobId || walrusResponse.alreadyCertified?.blobId).map((item, idx) => (
+                    <div key={idx} style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                      <a 
+                        href={item.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        style={{fontSize: '13px', flex: 1}}
+                      >
+                        {item.name}: {item.url.slice(0, 60)}...
+                      </a>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(item.url)
+                          alert(`已複製 ${item.name} URL`)
+                        }}
+                        style={{padding: '4px 8px', fontSize: '12px', cursor: 'pointer'}}
+                      >
+                        📋
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
               {walrusResponse.newlyCreated?.blobObject?.storage?.url && (
                 <div className="response-item">
                   <strong>Storage URL:</strong>
                   <a href={walrusResponse.newlyCreated.blobObject.storage.url} target="_blank" rel="noopener noreferrer">
                     {walrusResponse.newlyCreated.blobObject.storage.url}
                   </a>
+                </div>
+              )}
+              {isImageType(file?.type) && walrusResponse && (
+                <div className="response-item">
+                  <strong>預覽:</strong>
+                  <div style={{marginTop: '8px'}}>
+                    <ImageWithFallback 
+                      blobId={walrusResponse.newlyCreated?.blobObject?.blobId || walrusResponse.alreadyCertified?.blobId}
+                      getAllPossibleUrls={getAllPossibleUrls}
+                    />
+                  </div>
                 </div>
               )}
               <details>
@@ -301,10 +417,8 @@ export default function WalrusUploader() {
           <li>選擇要上傳的檔案</li>
           <li>點擊「上傳到 Walrus」將檔案儲存到分散式儲存</li>
           <li>點擊「提交 Proof 到鏈上」將檔案證明記錄到區塊鏈</li>
-          <li>或使用「一鍵上傳並上鏈」自動完成所有步驟</li>
         </ol>
       </div>
-
       {/* 用戶已上傳的檔案列表 */}
       {isConnected && (
         <div className="user-files-section">
@@ -331,6 +445,28 @@ export default function WalrusUploader() {
                     <span className="file-index">#{index + 1}</span>
                     <span className="file-type-badge">{fileInfo.fileType}</span>
                   </div>
+                  
+                  {/* 圖片預覽 */}
+                  {isImageType(fileInfo.fileType) && (
+                    <div className="file-preview">
+                      <ImageWithFallback 
+                        blobId={fileInfo.dataId}
+                        getAllPossibleUrls={getAllPossibleUrls}
+                      />
+                    </div>
+                  )}
+
+                  {/* 影片預覽 */}
+                  {isVideoType(fileInfo.fileType) && (
+                    <div className="file-preview">
+                      <video 
+                        src={getWalrusFileUrl(fileInfo.dataId)} 
+                        controls
+                        style={{width: '100%', maxHeight: '200px'}}
+                      />
+                    </div>
+                  )}
+
                   <div className="file-card-body">
                     <div className="file-info-row">
                       <strong>Data ID:</strong>
@@ -344,11 +480,72 @@ export default function WalrusUploader() {
                       <strong>上傳時間:</strong>
                       <span>{new Date(Number(fileInfo.timestamp) * 1000).toLocaleString('zh-TW')}</span>
                     </div>
+                    
+                    {/* 操作按鈕 */}
+                    <div className="file-actions">
+                      <a 
+                        href={getWalrusFileUrl(fileInfo.dataId)} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="btn-view"
+                        onClick={() => console.log('開啟 URL:', getWalrusFileUrl(fileInfo.dataId))}
+                      >
+                        🔗 查看檔案
+                      </a>
+                      {(isImageType(fileInfo.fileType) || isVideoType(fileInfo.fileType)) && (
+                        <button 
+                          onClick={() => openPreview(fileInfo.dataId)}
+                          className="btn-preview"
+                        >
+                          👁️ 預覽
+                        </button>
+                      )}
+                      <button 
+                        onClick={() => {
+                          console.log('Blob ID:', fileInfo.dataId)
+                          console.log('完整 URL:', getWalrusFileUrl(fileInfo.dataId))
+                          navigator.clipboard.writeText(getWalrusFileUrl(fileInfo.dataId))
+                          alert('URL 已複製到剪貼簿')
+                        }}
+                        className="btn-copy"
+                        title="複製 URL"
+                      >
+                        📋
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* 預覽模態框 */}
+      {previewBlobId && (
+        <div className="preview-modal" onClick={closePreview}>
+          <div className="preview-modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="preview-modal-close" onClick={closePreview}>
+              ✕
+            </button>
+            <div className="preview-modal-body">
+              <img 
+                src={getWalrusFileUrl(previewBlobId)} 
+                alt="Preview"
+                style={{maxWidth: '100%', maxHeight: '80vh'}}
+              />
+            </div>
+            <div className="preview-modal-footer">
+              <a 
+                href={getWalrusFileUrl(previewBlobId)} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="btn-open-new-tab"
+              >
+                在新分頁開啟
+              </a>
+            </div>
+          </div>
         </div>
       )}
     </div>
