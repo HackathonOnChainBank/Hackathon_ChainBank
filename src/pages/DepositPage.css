@@ -397,6 +397,30 @@
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
+/* 利率資訊顯示 */
+.rate-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, #fff9e6 0%, #fffbf0 100%);
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  border: 2px solid #ffc107;
+}
+
+.rate-info span {
+  color: #856404;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.rate-info strong {
+  color: #f57c00;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
 /* 載入動畫 */
 @keyframes pulse {
   0%, 100% { opacity: 1; }

@@ -19,7 +19,7 @@ export default function Home() {
   const [selfApp, setSelfApp] = useState<SelfApp | null>(null);
   const [universalLink, setUniversalLink] = useState("");
   const [userId] = useState("0x5199574A9004171C654fF4F679eBfaDDF8e1fBB4");
-  // 排除不是台灣人
+  // 排除不是美國人
   const excludedCountries = useMemo(() => [countries.UNITED_STATES], []);
 
   // Use useEffect to ensure code only executes on the client side

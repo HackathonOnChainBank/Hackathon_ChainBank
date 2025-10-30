@@ -8,13 +8,15 @@ import './HomePage.css'
 
 function HomePage() {
   const navigate = useNavigate()
-  const { login, isAuthenticated, currentUser, role } = useAuth()
+  const { login, isAuthenticated, currentUser, role, getAllUsers } = useAuth()
   const { wallet, loadWallet, provider, isLoading: walletLoading } = useWallet()
   const [ntdBalance, setNtdBalance] = useState('0')
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false)
   const [password, setPassword] = useState('')
   const [loadError, setLoadError] = useState('')
   const [balanceLoading, setBalanceLoading] = useState(false)
+  const [transferHistory, setTransferHistory] = useState([])
+  const [historyLoading, setHistoryLoading] = useState(false)
 
   // 載入錢包餘額
   useEffect(() => {
@@ -83,6 +85,91 @@ function HomePage() {
       setNtdBalance('0')
       setBalanceLoading(false)
     }
+  }, [wallet, provider])
+
+  // 獲取轉帳記錄的函數
+  const fetchTransferHistory = async () => {
+    if (!wallet || !provider) return
+
+    setHistoryLoading(true)
+    try {
+        const contractAddress = import.meta.env.VITE_NTD_TOKEN_CONTRACT_ADDRESS
+        if (!contractAddress) return
+
+        const contract = new ethers.Contract(contractAddress, NTD_TOKEN_ABI, provider)
+        
+        // 從創世區塊開始搜尋所有歷史記錄
+        const fromBlock = 0
+        const currentBlock = await provider.getBlockNumber()
+        
+        console.log(`📊 搜尋轉帳記錄: 從區塊 ${fromBlock} 到 ${currentBlock}`)
+        
+        // 查詢該用戶發送或接收的 Transfer 事件
+        const sentFilter = contract.filters.Transfer(wallet.address, null)
+        const receivedFilter = contract.filters.Transfer(null, wallet.address)
+        
+        const [sentEvents, receivedEvents] = await Promise.all([
+          contract.queryFilter(sentFilter, fromBlock, currentBlock),
+          contract.queryFilter(receivedFilter, fromBlock, currentBlock)
+        ])
+        
+        console.log(`✅ 找到 ${sentEvents.length} 筆轉出記錄, ${receivedEvents.length} 筆轉入記錄`)
+        
+        // 合併並排序事件
+        const allEvents = [...sentEvents, ...receivedEvents]
+        allEvents.sort((a, b) => b.blockNumber - a.blockNumber)
+        
+        // 格式化記錄並查找對方的姓名或ID
+        const decimals = await contract.decimals()
+        const allUsers = getAllUsers()
+        
+        const history = await Promise.all(
+          allEvents.slice(0, 10).map(async (event) => {
+            const block = await event.getBlock()
+            const isSent = event.args[0].toLowerCase() === wallet.address.toLowerCase()
+            const otherAddress = isSent ? event.args[1] : event.args[0]
+            
+            // 查找對方的用戶資料
+            let otherUserName = null
+            let otherUserId = null
+            
+            for (const [userId, userData] of Object.entries(allUsers)) {
+              if (userData.walletAddress && userData.walletAddress.toLowerCase() === otherAddress.toLowerCase()) {
+                otherUserName = userData.fullName
+                otherUserId = userId
+                break
+              }
+            }
+            
+            return {
+              hash: event.transactionHash,
+              from: event.args[0],
+              to: event.args[1],
+              amount: ethers.formatUnits(event.args[2], decimals),
+              timestamp: new Date(block.timestamp * 1000),
+              blockNumber: event.blockNumber,
+              type: isSent ? 'sent' : 'received',
+              otherUserName: otherUserName,
+              otherUserId: otherUserId,
+              otherAddress: otherAddress
+            }
+          })
+        )
+        
+        console.log('📋 格式化後的轉帳記錄:', history)
+        setTransferHistory(history)
+        console.log('✅ 已更新 transferHistory state, 共', history.length, '筆記錄')
+      } catch (err) {
+        console.error('❌ 獲取轉帳記錄失敗:', err)
+        console.error('錯誤堆疊:', err.stack)
+      } finally {
+        setHistoryLoading(false)
+      }
+  }
+
+  // 在錢包載入後自動獲取轉帳記錄
+  useEffect(() => {
+    fetchTransferHistory()
   }, [wallet, provider])
 
   const handleLoadWallet = async (e) => {
@@ -170,10 +257,10 @@ function HomePage() {
               <h3>快速功能</h3>
               <div className="action-buttons">
                 <button className="btn-action" onClick={() => navigate('/deposit')}>
-                  💵 存款
+                  💵 一般存款
                 </button>
-                <button className="btn-action" onClick={() => navigate('/kyc')}>
-                  ✅ KYC 驗證
+                <button className="btn-action" onClick={() => navigate('/transfer')}>
+                  ✅ 轉帳
                 </button>
                 <button className="btn-action" onClick={() => navigate('/creditcard')}>
                   💳 信用卡
@@ -182,6 +269,72 @@ function HomePage() {
                   🆘 災難救助
                 </button>
               </div>
+            </div>
+
+            <div className="transfer-history-section">
+              <div className="history-header">
+                <h3>💸 最近轉帳記錄 ({transferHistory.length})</h3>
+                <button 
+                  className="btn-refresh" 
+                  onClick={fetchTransferHistory}
+                  disabled={historyLoading}
+                >
+                  🔄 {historyLoading ? '載入中...' : '重新整理'}
+                </button>
+              </div>
+              {console.log('🖥️ 前端顯示狀態:', { historyLoading, recordCount: transferHistory.length })}
+              {historyLoading ? (
+                <div className="loading-message">載入中...</div>
+              ) : transferHistory.length === 0 ? (
+                <div className="empty-message">暫無轉帳記錄</div>
+              ) : (
+                <table className="history-table">
+                  <thead>
+                    <tr>
+                      <th>類型</th>
+                      <th>金額 (NTD)</th>
+                      <th>對方</th>
+                      <th>時間</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {transferHistory.map((record) => (
+                      <tr key={record.hash}>
+                        <td className={`type-cell ${record.type}`}>
+                          {record.type === 'sent' ? '轉出' : '轉入'}
+                        </td>
+                        <td className="amount-cell">
+                          {record.type === 'sent' ? '-' : '+'}{parseFloat(record.amount).toFixed(2)}
+                        </td>
+                        <td className="user-cell">
+                          {record.otherUserName ? (
+                            <div>
+                              <div className="user-name">{record.otherUserName}</div>
+                              {record.otherUserId && (
+                                <div className="user-id-small">({record.otherUserId})</div>
+                              )}
+                            </div>
+                          ) : record.otherUserId ? (
+                            <div className="user-id-only">{record.otherUserId}</div>
+                          ) : (
+                            <div className="address-fallback">
+                              {record.otherAddress.slice(0, 6)}...{record.otherAddress.slice(-4)}
+                            </div>
+                          )}
+                        </td>
+                        <td className="time-cell">
+                          {record.timestamp.toLocaleString('zh-TW', { 
+                            month: '2-digit', 
+                            day: '2-digit', 
+                            hour: '2-digit', 
+                            minute: '2-digit' 
+                          })}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
           </div>
         ) : null}

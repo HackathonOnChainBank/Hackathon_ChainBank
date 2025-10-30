@@ -15,13 +15,28 @@ function DepositPage() {
   const [password, setPassword] = useState('')
   const [amount, setAmount] = useState('')
   const [period, setPeriod] = useState('30') // 預設 30 天
-  const [interestRate, setInterestRate] = useState('')
+  const [interestRate, setInterestRate] = useState('3') // 預設 3%
   const [status, setStatus] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPasswordInput, setShowPasswordInput] = useState(false)
   const [isAllowed, setIsAllowed] = useState(false)
   const [checkingAllowance, setCheckingAllowance] = useState(false)
   const [userDeposits, setUserDeposits] = useState([])
+
+  // 利率對照表：天數 -> 利率(%)
+  const interestRateMap = {
+    '30': '3',
+    '90': '4',
+    '180': '5.5',
+    '365': '6'
+  }
+
+  // 當期限改變時，自動設定對應的利率
+  const handlePeriodChange = (newPeriod) => {
+    setPeriod(newPeriod)
+    const rate = interestRateMap[newPeriod] || '3' // 預設 3%
+    setInterestRate(rate)
+  }
 
   // 檢查是否已經有錢包載入
   useEffect(() => {
@@ -324,10 +339,10 @@ function DepositPage() {
               </label>
 
               <label>
-                定存期限
+                定存期限與利率
                 <select
                   value={period}
-                  onChange={(e) => setPeriod(e.target.value)}
+                  onChange={(e) => handlePeriodChange(e.target.value)}
                   disabled={loading || !isAllowed}
                 >
                   <option value="30">30 天 (1個月)</option>
@@ -337,18 +352,10 @@ function DepositPage() {
                 </select>
               </label>
 
-              <label>
-                年利率 (%)
-                <input 
-                  type="number" 
-                  placeholder="例如：5 代表 5%" 
-                  value={interestRate} 
-                  onChange={(e) => setInterestRate(e.target.value)}
-                  step="0.01"
-                  min="0"
-                  disabled={loading || !isAllowed}
-                />
-              </label>
+              <div className="rate-info">
+                <span>目前利率：</span>
+                <strong>{interestRate}% 年利率</strong>
+              </div>
               {amount && period && interestRate && (
                 <div className="deposit-preview">
                   <h4>預估收益</h4>

@@ -25,10 +25,6 @@ function Navigation() {
             災難救助
           </Link>
           
-          <Link to="/test" className={isActive('/test') ? 'active' : ''}>
-            測試頁面
-          </Link>
-          
           {isAuthenticated && (
             <>
               {role === 'user' && (
@@ -48,9 +44,14 @@ function Navigation() {
                 </>
               )}
               {role === 'admin' && (
-                <Link to="/admin" className={isActive('/admin') ? 'active' : ''}>
-                  管理員
-                </Link>
+                <>
+                  <Link to="/admin" className={isActive('/admin') ? 'active' : ''}>
+                    管理員
+                  </Link>
+                  <Link to="/test" className={isActive('/test') ? 'active' : ''}>
+                    測試頁面
+                  </Link>
+                </>
               )}
             </>
           )}

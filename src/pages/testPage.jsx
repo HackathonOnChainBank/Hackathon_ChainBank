@@ -1,4 +1,6 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import AllowanceComponent from '../components/AllowanceComponent';
 import BalanceOfComponent from '../components/BalanceOfComponent';
 import DecimalsComponent from '../components/DecimalsComponent';
@@ -52,9 +54,37 @@ import SetCreditLimitComponent from '../components/SetCreditLimitComponent';
 import SpendComponent from '../components/SpendComponent';
 
 function TestPage() {
+  const navigate = useNavigate();
+  const { role, isAuthenticated } = useAuth();
+
+  // 檢查權限：只有 admin 可以訪問
+  if (!isAuthenticated || role !== 'admin') {
+    return (
+      <div style={{ padding: '4rem 2rem', textAlign: 'center' }}>
+        <h1>⚠️ 權限不足</h1>
+        <p>此頁面僅限管理員訪問</p>
+        <button 
+          onClick={() => navigate('/')}
+          style={{
+            marginTop: '1rem',
+            padding: '0.75rem 2rem',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontSize: '1rem'
+          }}
+        >
+          返回首頁
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div>
-      <h1>測試頁面</h1>
+      <h1>測試頁面 (管理員專用)</h1>
       <h2><br></br>NTD_READ</h2>
       {/* config/read/ 組件 */}
       <AllowanceComponent />
