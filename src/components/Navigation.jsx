@@ -43,7 +43,10 @@ function Navigation() {
                     KYC 驗證
                   </Link>
                   <Link to="/creditcard" className={isActive('/creditcard') ? 'active' : ''}>
-                    信用卡
+                    信用卡申請
+                  </Link>
+                  <Link to="/creditcard-spend" className={isActive('/creditcard-spend') ? 'active' : ''}>
+                    信用卡消費
                   </Link>
                 </>
               )}

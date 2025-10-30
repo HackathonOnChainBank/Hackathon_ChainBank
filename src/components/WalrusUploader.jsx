@@ -63,11 +63,11 @@ export default function WalrusUploader() {
   const [previewBlobId, setPreviewBlobId] = useState(null)
 
   // Walrus API endpoints
-  // 注意：Walrus API 可能會變更，如果 404 請檢查官方文檔
+  // 注意：Walrus API 可能會變更，如果 404 請檢查官方文檔https://publisher.walrus-testnet.walrus.space
   const WALRUS_PUBLISHER_ENDPOINT = 'https://publisher.walrus-testnet.walrus.space'
   const WALRUS_AGGREGATOR_ENDPOINT = 'https://aggregator.walrus-testnet.walrus.space'
   // 替代讀取端點（使用 Walrus Sites）
-  const WALRUS_SITES_ENDPOINT = 'https://blob.store'
+  const WALRUS_SITES_ENDPOINT = 'https://aggregator.testnet.walrus.mirai.cloud'
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0]
@@ -80,8 +80,8 @@ export default function WalrusUploader() {
   const testWalrusConnection = async () => {
     setUploadStatus('正在測試 Walrus 連線...')
     try {
-      const response = await fetch(`${WALRUS_PUBLISHER_ENDPOINT}/v1/info`, {
-        method: 'GET',
+      const response = await fetch(`${WALRUS_PUBLISHER_ENDPOINT}/v1/blobs`, {
+        method: 'PUT',
       })
       
       if (response.ok) {
@@ -108,7 +108,7 @@ export default function WalrusUploader() {
 
     // 嘗試多個可能的端點
     const endpoints = [
-      `${WALRUS_PUBLISHER_ENDPOINT}/v1/store?epochs=5`,
+      `${WALRUS_PUBLISHER_ENDPOINT}/v1/blobs`,
       `${WALRUS_PUBLISHER_ENDPOINT}/v1/store`,
       `${WALRUS_PUBLISHER_ENDPOINT}/store?epochs=5`,
       `${WALRUS_PUBLISHER_ENDPOINT}/store`,
@@ -412,32 +412,6 @@ export default function WalrusUploader() {
               <div className="response-item">
                 <strong>Blob ID:</strong>
                 <code>{walrusResponse.newlyCreated?.blobObject?.blobId || walrusResponse.alreadyCertified?.blobId}</code>
-              </div>
-              <div className="response-item">
-                <strong>可用的讀取 URL (點擊測試):</strong>
-                <div style={{marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px'}}>
-                  {getAllPossibleUrls(walrusResponse.newlyCreated?.blobObject?.blobId || walrusResponse.alreadyCertified?.blobId).map((item, idx) => (
-                    <div key={idx} style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                      <a 
-                        href={item.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        style={{fontSize: '13px', flex: 1}}
-                      >
-                        {item.name}: {item.url.slice(0, 60)}...
-                      </a>
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText(item.url)
-                          alert(`已複製 ${item.name} URL`)
-                        }}
-                        style={{padding: '4px 8px', fontSize: '12px', cursor: 'pointer'}}
-                      >
-                        📋
-                      </button>
-                    </div>
-                  ))}
-                </div>
               </div>
               {walrusResponse.newlyCreated?.blobObject?.storage?.url && (
                 <div className="response-item">

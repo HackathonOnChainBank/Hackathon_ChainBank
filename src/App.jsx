@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage'
 import DepositPage from './pages/DepositPage'
 import KYCPage from './pages/KYCPage'
 import CreditCardPage from './pages/CreditCardPage'
+import CreditCardSpendPage from './pages/CreditCardSpendPage'
 import AdminPage from './pages/AdminPage'
 import DisasterReliefPage from './pages/DisasterReliefPage'
 import RegisterPage from './pages/RegisterPage'
@@ -47,6 +48,14 @@ function App() {
           element={
             <ProtectedRoute>
               <CreditCardPage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/creditcard-spend" 
+          element={
+            <ProtectedRoute>
+              <CreditCardSpendPage />
             </ProtectedRoute>
           } 
         />
