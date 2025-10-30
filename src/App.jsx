@@ -1,27 +1,65 @@
 import { Routes, Route, Link } from 'react-router-dom'
 import Navigation from './components/Navigation'
+import ProtectedRoute from './components/ProtectedRoute'
 import HomePage from './pages/HomePage'
 import DepositPage from './pages/DepositPage'
 import KYCPage from './pages/KYCPage'
 import CreditCardPage from './pages/CreditCardPage'
 import AdminPage from './pages/AdminPage'
 import DisasterReliefPage from './pages/DisasterReliefPage'
+import RegisterPage from './pages/RegisterPage'
+import LoginPage from './pages/LoginPage'
 import TestPage from './pages/testPage'
+import TransferPage from './pages/TransferPage'
 import './App.css'
 
 function App() {
   return (
     <div className="App">
       <Navigation />
-      <Link to="/test">前往測試頁面</Link>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/deposit" element={<DepositPage />} />
-        <Route path="/kyc" element={<KYCPage />} />
-        <Route path="/creditcard" element={<CreditCardPage />} />
-        <Route path="/admin" element={<AdminPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={<LoginPage />} />
+  <Route path="/transfer" element={<TransferPage />} />
         <Route path="/disaster" element={<DisasterReliefPage />} />
         <Route path="/test" element={<TestPage />} />
+        
+        {/* Protected Routes - Require Authentication */}
+        <Route 
+          path="/deposit" 
+          element={
+            <ProtectedRoute>
+              <DepositPage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/kyc" 
+          element={
+            <ProtectedRoute>
+              <KYCPage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/creditcard" 
+          element={
+            <ProtectedRoute>
+              <CreditCardPage />
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* Admin Only Route */}
+        <Route 
+          path="/admin" 
+          element={
+            <ProtectedRoute requireRole="admin">
+              <AdminPage />
+            </ProtectedRoute>
+          } 
+        />
       </Routes>
     </div>
   )

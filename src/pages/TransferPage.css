@@ -1,0 +1,321 @@
+.transfer-page {
+  min-height: calc(100vh - 80px);
+  background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+  padding: 2rem 1rem;
+}
+
+.transfer-page h1 {
+  text-align: center;
+  color: #333;
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.transfer-page > p {
+  text-align: center;
+  color: #666;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+}
+
+.card {
+  max-width: 700px;
+  margin: 0 auto 1.5rem;
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 10px 40px rgba(102, 126, 234, 0.1);
+  border: 1px solid rgba(102, 126, 234, 0.1);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 15px 50px rgba(102, 126, 234, 0.15);
+  transform: translateY(-2px);
+}
+
+.card h3 {
+  color: #667eea;
+  font-size: 1.3rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card h3::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 2px;
+}
+
+.inline-form {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.inline-form input[type="password"] {
+  flex: 1;
+  padding: 0.875rem 1.25rem;
+  border: 2px solid #e8eaf6;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: all 0.3s;
+  background: #fafbff;
+}
+
+.inline-form input[type="password"]:focus {
+  outline: none;
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.875rem 2rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  white-space: nowrap;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn:disabled { 
+  opacity: 0.5; 
+  cursor: not-allowed;
+  transform: none;
+}
+
+.card select {
+  width: 100%;
+  padding: 0.875rem 1.25rem;
+  border: 2px solid #e8eaf6;
+  border-radius: 10px;
+  font-size: 1rem;
+  background: #fafbff;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-bottom: 1rem;
+}
+
+.card select:focus {
+  outline: none;
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.card label {
+  display: block;
+  color: #555;
+  font-size: 0.95rem;
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+}
+
+.card label strong {
+  color: #667eea;
+  font-size: 1.1rem;
+}
+
+.small { 
+  color: #888; 
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #f8f9ff;
+  border-radius: 8px;
+  border-left: 3px solid #667eea;
+  line-height: 1.5;
+}
+
+.small em {
+  color: #667eea;
+  font-style: normal;
+  font-weight: 600;
+}
+
+.form-row { 
+  display: flex; 
+  gap: 1rem; 
+  align-items: stretch; 
+  margin-top: 1rem;
+}
+
+.form-row input { 
+  flex: 1; 
+  padding: 0.875rem 1.25rem; 
+  border-radius: 10px; 
+  border: 2px solid #e8eaf6;
+  font-size: 1rem;
+  background: #fafbff;
+  transition: all 0.3s;
+}
+
+.form-row input:focus {
+  outline: none;
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* 轉帳表單的輸入欄位樣式 */
+.card form input[type="number"],
+.card form input[type="password"] {
+  width: 100%;
+  padding: 0.875rem 1.25rem;
+  border: 2px solid #e8eaf6;
+  border-radius: 10px;
+  font-size: 1rem;
+  background: #fafbff;
+  transition: all 0.3s;
+  box-sizing: border-box;
+}
+
+.card form input[type="number"]:focus,
+.card form input[type="password"]:focus {
+  outline: none;
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.card form input[type="password"] {
+  border-color: #e0bfff;
+  background: #faf6ff;
+}
+
+.card form input[type="password"]:focus {
+  border-color: #764ba2;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.1);
+}
+
+.card form input[type="password"]::placeholder {
+  color: #9c88b3;
+}
+
+.status { 
+  max-width: 700px;
+  margin: 1.5rem auto;
+  padding: 1rem 1.5rem; 
+  background: linear-gradient(135deg, #667eea10 0%, #764ba210 100%);
+  border-radius: 12px; 
+  color: #333;
+  border-left: 4px solid #667eea;
+  font-weight: 500;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+}
+
+.note { 
+  max-width: 700px;
+  margin: 2rem auto 0;
+  padding: 1rem 1.5rem;
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+  border-radius: 8px;
+  color: #856404;
+  font-size: 0.9rem;
+}
+
+.note p {
+  margin: 0;
+}
+
+/* 成功訊息樣式 */
+.status.success {
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  border-left-color: #28a745;
+  color: #155724;
+}
+
+/* 錯誤訊息樣式 */
+.status.error {
+  background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+  border-left-color: #dc3545;
+  color: #721c24;
+}
+
+/* 載入動畫 */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.btn:disabled {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* 安全提示樣式 */
+.card form .small {
+  background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+  border-left-color: #ffc107;
+  color: #856404;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .transfer-page h1 {
+    font-size: 2rem;
+  }
+  
+  .card {
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .inline-form { 
+    flex-direction: column; 
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  
+  .form-row { 
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .btn {
+    width: 100%;
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .transfer-page {
+    padding: 1rem 0.5rem;
+  }
+  
+  .transfer-page h1 {
+    font-size: 1.75rem;
+  }
+  
+  .card {
+    padding: 1.25rem;
+  }
+}
