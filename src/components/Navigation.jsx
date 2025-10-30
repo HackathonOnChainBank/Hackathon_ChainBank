@@ -39,9 +39,6 @@ function Navigation() {
                   <Link to="/transfer" className={isActive('/transfer') ? 'active' : ''}>
                     一般轉帳
                   </Link>
-                  <Link to="/kyc" className={isActive('/kyc') ? 'active' : ''}>
-                    KYC 驗證
-                  </Link>
                   <Link to="/creditcard" className={isActive('/creditcard') ? 'active' : ''}>
                     信用卡申請
                   </Link>

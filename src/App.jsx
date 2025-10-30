@@ -3,7 +3,6 @@ import Navigation from './components/Navigation'
 import ProtectedRoute from './components/ProtectedRoute'
 import HomePage from './pages/HomePage'
 import DepositPage from './pages/DepositPage'
-import KYCPage from './pages/KYCPage'
 import CreditCardPage from './pages/CreditCardPage'
 import CreditCardSpendPage from './pages/CreditCardSpendPage'
 import AdminPage from './pages/AdminPage'
@@ -32,14 +31,6 @@ function App() {
           element={
             <ProtectedRoute>
               <DepositPage />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/kyc" 
-          element={
-            <ProtectedRoute>
-              <KYCPage />
             </ProtectedRoute>
           } 
         />
