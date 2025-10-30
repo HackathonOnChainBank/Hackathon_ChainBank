@@ -26,7 +26,7 @@ contract DepositProduct {
         bankAdmin = _bankAdmin;
     }
 
-    // --- 定存：單筆建立（首度存款自動註冊user） ---
+    // --- 定存：單筆建立（首度存款自動註冊user） --- //period請用前端存string/先已前端日期再轉timestamp傳進來
     function createDeposit(address user, uint256 amount, uint256 period, uint256 interestRate) external {
         require(msg.sender == bankAdmin, "Only bank");
         ntd.transferFrom(user, address(this), amount);

@@ -37,7 +37,7 @@ function Navigation() {
                     存款
                   </Link>
                   <Link to="/transfer" className={isActive('/transfer') ? 'active' : ''}>
-                    轉帳
+                    一般轉帳
                   </Link>
                   <Link to="/kyc" className={isActive('/kyc') ? 'active' : ''}>
                     KYC 驗證
