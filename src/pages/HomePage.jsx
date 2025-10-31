@@ -379,18 +379,21 @@ function HomePage() {
       <div className="role-selection">
         <h2>選擇您的身份</h2>
         <div className="role-cards">
-          <div className="role-card" onClick={() => handleRoleSelect('user')}>
+          <div className="role-card">
             <div className="role-icon">👤</div>
             <h3>一般使用者</h3>
             <p>存款管理、KYC 驗證、信用卡服務</p>
-            <button className="btn-primary">進入</button>
+            <div className="role-buttons">
+              <button className="btn-primary" onClick={() => navigate('/login')}>登入</button>
+              <button className="btn-primary" onClick={() => navigate('/register')}>註冊</button>
+            </div>
           </div>
 
-          <div className="role-card" onClick={() => handleRoleSelect('admin')}>
+          <div className="role-card">
             <div className="role-icon">⚙️</div>
             <h3>管理員</h3>
             <p>系統管理、審核與監控</p>
-            <button className="btn-primary">進入</button>
+            <button className="btn-primary" onClick={() => handleRoleSelect('admin')}>登入</button>
           </div>
         </div>
       </div>
