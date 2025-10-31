@@ -203,7 +203,17 @@ function RegisterPage() {
       
       console.log('✓ 用戶註冊成功！', registeredUser)
       
-      // 7. 儲存必要資訊並進入下一步
+      // 7. 轉 CELO 給新用戶作為 gas fee
+      console.log('正在轉帳 CELO 作為 gas fee...')
+      try {
+        await transferInitialGasFee(wallet.address)
+        console.log('✓ 初始 gas fee 已轉帳')
+      } catch (gasError) {
+        console.warn('Gas fee 轉帳失敗:', gasError)
+        // 不中斷註冊流程，只記錄錯誤
+      }
+
+      // 8. 儲存必要資訊並進入下一步
       setWalletInfo({
         ...userData,
         privateKey: wallet.privateKey, // 暫存用於顯示（可選）
@@ -216,6 +226,52 @@ function RegisterPage() {
       setError(err.message || '註冊失敗，請重試')
     } finally {
       setIsCreating(false)
+    }
+  }
+
+  // 轉帳初始 gas fee 給新用戶
+  const transferInitialGasFee = async (recipientAddress) => {
+    try {
+      // 使用管理員私鑰
+      const adminPk = import.meta.env.VITE_PRIVATE_KEY_1
+      if (!adminPk) {
+        throw new Error('管理員私鑰未設定')
+      }
+      console.log('管理員私鑰已載入')
+
+      // 連接到 Celo Sepolia RPC
+      const rpcUrl = import.meta.env.VITE_RPC_URL || 'https://forno.celo-sepolia.celo-testnet.org'
+      console.log('RPC URL:', rpcUrl)
+      
+      const provider = new ethers.JsonRpcProvider(rpcUrl)
+      const adminWallet = new ethers.Wallet(
+        adminPk.startsWith('0x') ? adminPk : '0x' + adminPk,
+        provider
+      )
+
+      // 轉帳金額（例如：0.01 CELO，足夠支付多次交易的 gas）
+      const amount = ethers.parseEther('0.05') 
+
+      console.log('從管理員錢包轉帳:', adminWallet.address)
+      console.log('到新用戶錢包:', recipientAddress)
+      console.log('金額:', ethers.formatEther(amount), 'CELO')
+
+      const tx = await adminWallet.sendTransaction({
+        to: recipientAddress,
+        value: amount,
+        gasLimit: 21000 // 標準轉帳 gas limit
+      })
+
+      console.log('交易已提交:', tx.hash)
+      
+      // 等待確認
+      const receipt = await tx.wait()
+      console.log('交易已確認，區塊:', receipt.blockNumber)
+      
+      return receipt
+    } catch (error) {
+      console.error('轉帳 gas fee 失敗:', error)
+      throw error
     }
   }
 
