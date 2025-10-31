@@ -80,22 +80,6 @@ const uuid = generateUuidV4();
 - 使用密碼學安全的隨機數生成器
 - 保證全球唯一性（碰撞機率 < 10^-18）
 
-#### 2. `generateUuidV1()` - 基於時間戳生成 UUID
-```javascript
-const uuid = generateUuidV1();
-// 結果包含時間資訊，可以追溯生成時間
-```
-
-**銀行類比：**
-- 像是帳戶開戶日期 + 序號的組合
-- 可以從 UUID 得知大致的註冊時間
-
-#### 3. `generateUuidV5()` - 基於名稱生成 UUID
-```javascript
-const uuid = await generateUuidV5(NAMESPACE_DNS, "chainbank.com");
-// 相同輸入永遠產生相同 UUID
-```
-
 **銀行類比：**
 - 像是根據「分行代碼 + 客戶名字」產生固定號碼
 - 可用於系統間的 ID 對應
