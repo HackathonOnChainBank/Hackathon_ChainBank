@@ -9,7 +9,7 @@ import { ethers } from 'ethers';
 import { getPrivateKey } from '../utils/walletStorage';
 import { ABI as NTD_TOKEN_ABI } from '../config/NTD_TOKEN_ABI';
 
-export function InfoPage(): React.ReactNode {
+export function InfoPage() {
   const navigate = useNavigate();
   const { isAuthenticated, role, currentUser, getAllUsers } = useAuth();
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
@@ -21,6 +21,7 @@ export function InfoPage(): React.ReactNode {
   const [balanceLoading, setBalanceLoading] = useState(false);
   const [transferHistory, setTransferHistory] = useState<any[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [status, setStatus] = useState<string | null>(null);
 
   // 檢查是否需要顯示密碼提示
   useEffect(() => {
@@ -190,6 +191,20 @@ export function InfoPage(): React.ReactNode {
     } finally {
       setHistoryLoading(false);
     }
+  };
+
+  // 渲染狀態訊息，確保 emoji 不被染色
+  const renderStatus = (status: string) => {
+    const emojiMatch = status.match(/^([\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}])\s*(.*)$/u);
+    if (emojiMatch) {
+      return (
+        <>
+          <span style={{ color: 'initial' }}>{emojiMatch[1]}</span>
+          <span className="text-slate-200">{emojiMatch[2]}</span>
+        </>
+      );
+    }
+    return <span className="text-slate-200">{status}</span>;
   };
 
   // 如果尚未登入，顯示登入提示
@@ -370,6 +385,15 @@ export function InfoPage(): React.ReactNode {
               </Card>
             </div>
           ) : null}
+
+          {/* Status Message */}
+          {status && (
+            <div className={`mt-6 p-4 rounded-lg ${status.includes('✅') ? 'bg-green-900/20 border border-green-500/30' : status.includes('❌') ? 'bg-red-900/20 border border-red-500/30' : 'bg-slate-800/50 border border-slate-600'}`}>
+              <div className="flex items-center gap-2">
+                {renderStatus(status)}
+              </div>
+            </div>
+          )}
 
           {/* Features Section */}
           <Card className="bg-gradient-to-br from-slate-900/80 to-slate-800/80 border border-slate-700/50 backdrop-blur-sm p-8 mt-8">

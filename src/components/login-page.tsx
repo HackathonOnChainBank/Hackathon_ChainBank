@@ -108,7 +108,7 @@ export function LoginPage() {
         <div className="mb-8">
           <h1 className="text-4xl sm:text-5xl mb-4">
             <span className="bg-gradient-to-r from-slate-200 to-purple-200 bg-clip-text text-transparent">
-              🏦 ChainBank 登入
+              <span style={{ color: 'initial' }}>🏦</span> ChainBank 登入
             </span>
           </h1>
           <p className="text-slate-400 text-lg">使用您的帳號 ID 和密碼登入</p>
@@ -253,7 +253,9 @@ export function LoginPage() {
 
         {/* Login tips */}
         <div className="mt-8 bg-slate-800/50 p-4 rounded-lg">
-          <h3 className="text-slate-200 text-lg mb-2">💡 無法登入？</h3>
+          <h3 className="text-slate-200 text-lg mb-2">
+            <span style={{ color: 'initial' }}>💡</span> 無法登入？
+          </h3>
           <ul className="text-slate-400 text-sm space-y-1">
             <li>請確認您輸入的帳號 ID 與註冊時相同</li>
             <li>密碼區分大小寫，請檢查是否正確</li>

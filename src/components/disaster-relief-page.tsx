@@ -153,7 +153,7 @@ export function DisasterReliefPage() {
         <div className="mb-8">
           <h1 className="text-4xl sm:text-5xl mb-4">
             <span className="bg-gradient-to-r from-slate-200 to-purple-200 bg-clip-text text-transparent">
-              災難救助申請
+              <span style={{ color: 'initial' }}>🌊</span> 災害救助
             </span>
           </h1>
           <p className="text-slate-400 text-lg">透過區塊鏈技術提供快速、透明的災難救助服務</p>

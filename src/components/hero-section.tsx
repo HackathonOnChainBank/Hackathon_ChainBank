@@ -32,6 +32,10 @@ export function HeroSection() {
             發卡、轉帳、定存，一站完成的 RWA 銀行
           </p>
           
+          <p className="text-slate-400 text-lg mb-8">
+            <span style={{ color: 'initial' }}>💰</span> 安全、透明、去中心化的銀行服務
+          </p>
+          
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-12">
             <Button 

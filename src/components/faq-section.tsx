@@ -29,10 +29,8 @@ export function FAQSection() {
       <div className="relative z-10 max-w-4xl mx-auto">
         {/* Section header */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl sm:text-5xl mb-4">
-            <span className="bg-gradient-to-r from-slate-200 to-purple-200 bg-clip-text text-transparent">
-              常見問題
-            </span>
+          <h2 className="text-3xl sm:text-4xl mb-8">
+            <span style={{ color: 'initial' }}>❓</span> 常見問題
           </h2>
           <p className="text-slate-400 text-lg">
             關於 RWA Bank 的常見疑問解答

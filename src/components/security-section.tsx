@@ -64,20 +64,20 @@ export function SecuritySection() {
         {/* Trust badges */}
         <div className="mt-16 flex flex-wrap justify-center items-center gap-8 text-slate-500 text-sm">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center">
-              <Shield className="h-4 w-4 text-purple-400" />
+            <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500/20 to-blue-500/20 mb-4">
+              <span style={{ color: 'initial' }}>🔒</span>
             </div>
             <span>ISO 27001 認證</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center">
-              <Lock className="h-4 w-4 text-purple-400" />
+            <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500/20 to-blue-500/20 mb-4">
+              <span style={{ color: 'initial' }}>SOC 2 Type II</span>
             </div>
             <span>SOC 2 Type II</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center">
-              <Database className="h-4 w-4 text-purple-400" />
+            <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500/20 to-blue-500/20 mb-4">
+              <span style={{ color: 'initial' }}>GDPR 合規</span>
             </div>
             <span>GDPR 合規</span>
           </div>

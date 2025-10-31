@@ -362,6 +362,20 @@ export function CreditCardApplyPage() {
     }
   };
 
+  // 渲染狀態訊息，確保 emoji 不被染色
+  const renderStatus = (status: string) => {
+    const emojiMatch = status.match(/^([\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}])\s*(.*)$/u);
+    if (emojiMatch) {
+      return (
+        <>
+          <span style={{ color: 'initial' }}>{emojiMatch[1]}</span>
+          <span className="text-slate-200">{emojiMatch[2]}</span>
+        </>
+      );
+    }
+    return <span className="text-slate-200">{status}</span>;
+  };
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 pt-24 pb-16 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
@@ -379,7 +393,7 @@ export function CreditCardApplyPage() {
         <div className="mb-8">
           <h1 className="text-4xl sm:text-5xl mb-4">
             <span className="bg-gradient-to-r from-slate-200 via-purple-200 to-blue-200 bg-clip-text text-transparent">
-              💳 信用卡申請
+              <span style={{ color: 'initial' }}>💳</span> 信用卡申請
             </span>
           </h1>
           <p className="text-slate-400 text-lg">根據您的 NTD 餘額申請專屬信用卡</p>
@@ -632,9 +646,7 @@ export function CreditCardApplyPage() {
         {status && (
           <div className={`mt-6 p-4 rounded-lg ${status.includes('✅') ? 'bg-green-900/20 border border-green-500/30' : status.includes('❌') ? 'bg-red-900/20 border border-red-500/30' : 'bg-slate-800/50 border border-slate-600'}`}>
             <div className="flex items-center gap-2">
-              {status.includes('✅') && <CheckCircle className="h-5 w-5 text-green-400" />}
-              {status.includes('❌') && <AlertCircle className="h-5 w-5 text-red-400" />}
-              <span className="text-slate-200">{status}</span>
+              {renderStatus(status)}
             </div>
           </div>
         )}

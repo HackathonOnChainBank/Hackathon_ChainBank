@@ -1,5 +1,5 @@
 import { useState } from 'react';
-// import { useNavigate } from 'react-router-dom'; // 移除此行，因為未使用
+import { useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { generateUuidV4 } from '../contract/uuid-generator';
 import { uuidToShortId } from '../contract/short-uuid';
@@ -39,7 +39,7 @@ declare global {
 }
 
 export function RegisterPage() {
-  // const navigate = useNavigate(); // 移除此行，因為未使用
+  const navigate = useNavigate();
   const { register } = useAuth();
   const [step, setStep] = useState(1); // 1: 填寫資料, 2: 設定密碼, 3: 顯示 shortUuid
   const [isCreating, setIsCreating] = useState(false);
@@ -298,7 +298,7 @@ export function RegisterPage() {
         <div className="mb-8">
           <h1 className="text-4xl sm:text-5xl mb-4">
             <span className="bg-gradient-to-r from-slate-200 to-purple-200 bg-clip-text text-transparent">
-              🏦 ChainBank 用戶註冊
+              <span style={{ color: 'initial' }}>🏦</span> ChainBank 用戶註冊
             </span>
           </h1>
           <p className="text-slate-400 text-lg">填寫基本資料，系統將自動為您創建區塊鏈錢包</p>

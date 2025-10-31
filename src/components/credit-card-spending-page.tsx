@@ -404,7 +404,7 @@ export function CreditCardSpendingPage() {
         <div className="mb-8">
           <h1 className="text-4xl sm:text-5xl mb-4">
             <span className="bg-gradient-to-r from-slate-200 via-purple-200 to-blue-200 bg-clip-text text-transparent">
-              💳 信用卡消費與還款
+              <span style={{ color: 'initial' }}>💳</span> 信用卡消費與還款
             </span>
           </h1>
           <p className="text-slate-400 text-lg">使用您的信用卡進行消費，並隨時還款</p>
