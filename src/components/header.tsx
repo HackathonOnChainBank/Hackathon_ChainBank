@@ -1,6 +1,7 @@
 import { Button } from "./ui/button";
 import { Wallet, Menu } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from '../contexts/AuthContext';
 
 type HeaderProps = {
   currentPage: string;
@@ -9,15 +10,24 @@ type HeaderProps = {
 
 export function Header({ currentPage, onNavigate }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { logout } = useAuth();
   
   const navLinks = [
     { name: "首頁", page: "home" },
+    { name: "資訊頁面", page: "info" },
+    { name: "登入", page: "login" },
+    { name: "註冊", page: "register" },
     { name: "災難救助", page: "disaster-relief" },
     { name: "存款", page: "deposit" },
     { name: "一般轉帳", page: "transfer" },
     { name: "信用卡申請", page: "credit-card-apply" },
     { name: "信用卡消費", page: "credit-card-spending" }
   ];
+  
+  const handleLogout = () => {
+    logout();
+    onNavigate("login");
+  };
   
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/50">
@@ -58,12 +68,9 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
             <Button 
               variant="outline"
               className="bg-transparent border-slate-700 text-slate-300 hover:bg-white/5"
+              onClick={handleLogout}
             >
-              登入
-            </Button>
-            <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 border-0">
-              <Wallet className="mr-2 h-4 w-4" />
-              連結錢包
+              登出
             </Button>
           </div>
           
@@ -100,12 +107,12 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                 <Button 
                   variant="outline"
                   className="w-full bg-transparent border-slate-700 text-slate-300"
+                  onClick={() => {
+                    handleLogout();
+                    setIsMenuOpen(false);
+                  }}
                 >
-                  登入
-                </Button>
-                <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 border-0">
-                  <Wallet className="mr-2 h-4 w-4" />
-                  連結錢包
+                  登出
                 </Button>
               </div>
             </div>

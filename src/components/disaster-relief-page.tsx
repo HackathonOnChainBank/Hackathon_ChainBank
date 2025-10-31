@@ -2,14 +2,149 @@ import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { AlertCircle, CheckCircle2, Copy } from "lucide-react";
 import { useState } from "react";
+import { ethers } from 'ethers';
+import { useAuth } from '../contexts/AuthContext';
+
+// 定義 WalletInfo 接口
+interface WalletInfo {
+  fullName: string;
+  country: string;
+  dateOfBirth: string;
+  phoneCountryCode: string;
+  phone: string;
+  email: string;
+  uuid: string;
+  shortUuid: string;
+  walletAddress: string;
+  passwordHash: string;
+  network: string;
+  chainId: number;
+  privateKey: string;
+  mnemonic: string;
+}
 
 export function DisasterReliefPage() {
-  const [status, setStatus] = useState<'idle' | 'verifying' | 'verified'>('idle');
+  const [status, setStatus] = useState<'idle' | 'verifying' | 'verified' | 'opening_self' | 'verification_cancelled' | 'sending_tx' | string>('idle');
+  const [verificationResult, setVerificationResult] = useState<any>(null);
+  const [selectedProgram, setSelectedProgram] = useState<string>('');
   const contractAddress = "0x37ACE2979C7d6c395AF0D3f400a878fA858b724a";
+
+  const { getAllUsers } = useAuth();
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(contractAddress);
   };
+
+  // 從 DisasterReliefUI.jsx 整合的驗證邏輯
+  async function verifyWithSelf() {
+    setStatus('opening_self');
+
+    try {
+      const selfServiceUrl = (import.meta as any).env.VITE_SELF_SERVICE_URL || 'http://localhost:3000'; // 類型斷言以修復 'env' 錯誤
+      const popup = window.open(
+        selfServiceUrl,
+        'SelfVerification',
+        'width=600,height=800,left=200,top=100'
+      );
+
+      if (!popup) {
+        setStatus('Popup 被阻擋，請允許彈出視窗');
+        throw new Error('Popup blocked. Please allow popups for this site.');
+      }
+
+      const handleMessage = (event: MessageEvent) => { // 添加類型註解
+        console.log('Received message:', event.data);
+        
+        if (event.data && event.data.type === 'SELF_VERIFICATION_SUCCESS') {
+          console.log('✓ Verification successful! Data:', event.data.data);
+          
+          const walletAddress = event.data.data.userIdentifier || '0x'; // 假設有地址
+          console.log('💼 驗證成功');
+          
+          // 從 localStorage 查找對應的用戶 ID
+          let users = [];
+          let matchedUser: WalletInfo | undefined = undefined;
+          try {
+            users = (getAllUsers as any)(); // 類型斷言以修復 'never' 錯誤
+            console.log('👥 All Users:', users);
+            matchedUser = Object.values(users).find((user: any) => user.walletAddress?.toLowerCase() === walletAddress.toLowerCase()) as WalletInfo | undefined; // 類型斷言
+            console.log('🎯 Matched User:', matchedUser);
+          } catch (error) {
+            console.error('Error getting users:', error);
+          }
+          
+          const userId = matchedUser ? matchedUser.shortUuid : walletAddress;
+          const displayName = matchedUser ? `${matchedUser.fullName} (${matchedUser.shortUuid})` : userId;
+          
+          console.log('📝 User ID:', userId, 'Display Name:', displayName);
+          
+          setVerificationResult({
+            verified: true,
+            timestamp: event.data.data.timestamp,
+            nullifier: event.data.data.nullifier || '0x' + '01'.repeat(32),
+            userIdentifier: walletAddress,
+            userId: userId,
+            displayName: displayName,
+            proof: event.data.data.proof || 'SELF_PROOF_FROM_SERVICE'
+          });
+          
+          setStatus('verified');
+          window.removeEventListener('message', handleMessage);
+          
+          console.log('🚀 驗證完成');
+          alert(`✓ 身份驗證成功！已自動帶入您的用戶 ID: ${userId}`);
+        }
+      };
+
+      window.addEventListener('message', handleMessage);
+      console.log('Message listener added, waiting for verification...');
+
+      const checkPopup = setInterval(() => {
+        if (popup.closed) {
+          clearInterval(checkPopup);
+          window.removeEventListener('message', handleMessage);
+          console.log('Popup closed');
+          
+          if (status === 'opening_self' && !verificationResult) {
+            setStatus('verification_cancelled');
+          }
+        }
+      }, 500);
+
+    } catch (err) {
+      const error = err as Error; // 類型斷言
+      setStatus('verify_failed: ' + error.message);
+    }
+  };
+
+  // 領取救助金
+  const requestPayout = async () => {
+    if (!selectedProgram || !verificationResult) return;
+    
+    setStatus('sending_tx');
+    try {
+      // 模擬領取過程（實際應用中應連接到區塊鏈合約）
+      console.log(`正在領取 ${selectedProgram}...`);
+      
+      // 模擬延遲
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      alert(`✓ 成功領取 ${selectedProgram}！救助金已發送到您的錢包。`);
+      setSelectedProgram('');
+      setStatus('verified');
+    } catch (error) {
+      console.error('領取失敗:', error);
+      alert('領取失敗，請重試。');
+      setStatus('verified');
+    }
+  };
+
+  const programs = [
+    { value: '緊急救助 (最高 NT$ 10,000)', label: '緊急救助 (最高 NT$ 10,000)' },
+    { value: '生活補助 (最高 NT$ 30,000)', label: '生活補助 (最高 NT$ 30,000)' },
+    { value: '醫療補助 (最高 NT$ 50,000)', label: '醫療補助 (最高 NT$ 50,000)' },
+    { value: '住房重建 (最高 NT$ 100,000)', label: '住房重建 (最高 NT$ 100,000)' }
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 pt-24 pb-16 px-4 sm:px-6 lg:px-8">
@@ -97,11 +232,19 @@ export function DisasterReliefPage() {
                       </p>
                       <Button 
                         className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 border-0"
-                        onClick={() => setStatus('verifying')}
+                        onClick={verifyWithSelf}
                         disabled={status === 'verified'}
                       >
                         {status === 'verified' ? '已完成驗證' : '開始驗證'}
                       </Button>
+                      {verificationResult && (
+                        <div className="verified-box" style={{ marginTop: '10px', padding: '10px', background: '#e8f5e8', borderRadius: '8px' }}>
+                          <strong>✓ 驗證成功</strong>
+                          <div style={{ fontSize: '0.9em', color: '#666', marginTop: '8px' }}>
+                            救助金將發送到您綁定的錢包地址
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </Card>
@@ -114,39 +257,14 @@ export function DisasterReliefPage() {
                     </div>
                     <div className="flex-1">
                       <h3 className="text-slate-100 mb-2">選擇救助計畫</h3>
-                      <p className="text-slate-400 text-sm mb-4 leading-relaxed">
-                        根據您的需求選擇合適的救助計畫。每個計畫都有不同的額度和使用條件，請仔細閱讀說明後選擇。
-                      </p>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <Button 
-                          variant="outline"
-                          className="bg-slate-800/50 border-slate-600 hover:bg-slate-700/50"
-                          disabled={status !== 'verified'}
-                        >
-                          緊急救助 (最高 NT$ 10,000)
-                        </Button>
-                        <Button 
-                          variant="outline"
-                          className="bg-slate-800/50 border-slate-600 hover:bg-slate-700/50"
-                          disabled={status !== 'verified'}
-                        >
-                          生活補助 (最高 NT$ 30,000)
-                        </Button>
-                        <Button 
-                          variant="outline"
-                          className="bg-slate-800/50 border-slate-600 hover:bg-slate-700/50"
-                          disabled={status !== 'verified'}
-                        >
-                          醫療補助 (最高 NT$ 50,000)
-                        </Button>
-                        <Button 
-                          variant="outline"
-                          className="bg-slate-800/50 border-slate-600 hover:bg-slate-700/50"
-                          disabled={status !== 'verified'}
-                        >
-                          住房重建 (最高 NT$ 100,000)
-                        </Button>
-                      </div>
+                      <button
+                        onClick={requestPayout}
+                        disabled={!verificationResult || !selectedProgram || status === 'sending_tx'}
+                        style={{ marginTop: '15px' }}
+                        className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-500 hover:to-blue-500 border-0 text-white py-2 px-4 rounded-lg disabled:opacity-50"
+                      >
+                        {status === 'sending_tx' ? '處理中...' : '領取救助金'}
+                      </button>
                     </div>
                   </div>
                 </Card>
@@ -160,19 +278,11 @@ export function DisasterReliefPage() {
                   <ul className="space-y-3 text-slate-400 text-sm">
                     <li className="flex items-start gap-2">
                       <span className="text-purple-400 mt-1">•</span>
-                      <span>請確保已連接錢包並切換到 Celo Sepolia 網路</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-purple-400 mt-1">•</span>
                       <span>驗證過程需要使用 Self Protocol App</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-purple-400 mt-1">•</span>
-                      <span>救助金將直接發送到您連接的錢包地址</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-purple-400 mt-1">•</span>
-                      <span>請妥善保管您的錢包私鑰</span>
+                      <span>救助金將直接發送到您的帳戶</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-purple-400 mt-1">•</span>

@@ -1,7 +1,9 @@
 import { Button } from "./ui/button";
+import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Wallet } from "lucide-react";
 
 export function HeroSection() {
+  const navigate = useNavigate();
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
       {/* Background gradient with metallic effect */}
@@ -34,19 +36,11 @@ export function HeroSection() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-12">
             <Button 
               size="lg" 
-              className="group relative overflow-hidden bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 border-0 px-8 py-6 shadow-lg shadow-purple-500/30"
-            >
+              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 border-0"
+              onClick={() => navigate('/register')}>
               <Wallet className="mr-2 h-5 w-5" />
               立即開通 NTD 錢包
               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
-            
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="bg-white/5 backdrop-blur-sm border-white/10 text-slate-200 hover:bg-white/10 px-8 py-6"
-            >
-              查看上鏈流程
             </Button>
           </div>
           

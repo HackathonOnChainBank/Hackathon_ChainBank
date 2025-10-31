@@ -244,20 +244,33 @@ function DepositPage() {
       const depositContractAddress = import.meta.env.VITE_DEPOSIT_CONTRACT_ADDRESS
       if (!depositContractAddress) throw new Error('DepositProduct 合約地址未設定')
 
-      const contract = new ethers.Contract(depositContractAddress, DEPOSIT_PRODUCT_ABI, wallet)
-      const tx = await contract.withdrawDeposit(wallet.address, depositId)
+      // 使用管理員私鑰建立合約實例來提領
+      const adminPk = import.meta.env.VITE_PRIVATE_KEY_1;
+      if (!adminPk) throw new Error('管理員私鑰未設定');
+
+      const rpcUrl = import.meta.env.VITE_RPC_URL || 'https://forno.celo-sepolia.celo-testnet.org';
+      const providerAdmin = new ethers.JsonRpcProvider(rpcUrl);
+      const adminSigner = new ethers.Wallet(adminPk.startsWith('0x') ? adminPk : '0x' + adminPk, providerAdmin);
+
+      const contract = new ethers.Contract(depositContractAddress, DEPOSIT_PRODUCT_ABI, adminSigner);
+      const tx = await contract.withdrawDeposit(wallet.address, depositId);
       
       setStatus(`📤 提領中，交易雜湊: ${tx.hash.substring(0, 10)}...`)
       await tx.wait()
       setStatus(`✅ 定存 #${depositId} 提領成功！`)
 
+
       // 重新載入定存記錄
       await loadUserDeposits()
     } catch (err) {
-      console.error('提領定存錯誤:', err)
-      setStatus('❌ 提領失敗: ' + (err.message || err))
+      console.error('提領定存錯誤:', err);
+      if (err.reason === 'Not yet due') {
+        setStatus('❌ 提領失敗: 尚未到期');
+      } else {
+        setStatus('❌ 提領失敗: ' + (err.message || err));
+      }
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
