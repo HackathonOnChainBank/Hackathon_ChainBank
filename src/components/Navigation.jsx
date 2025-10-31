@@ -18,14 +18,14 @@ function Navigation() {
         </div>
 
         <div className="nav-links" style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
+          <Link to="/" className={isActive('/') ? 'active' : ''}>
+            首頁
+          </Link>
           
           {isAuthenticated && (
             <>
               {role === 'user' && (
                 <>
-                  <Link to="/" className={isActive('/deposit') ? 'active' : ''}>
-                    首頁
-                  </Link>
                   <Link to="/deposit" className={isActive('/deposit') ? 'active' : ''}>
                     存款
                   </Link>

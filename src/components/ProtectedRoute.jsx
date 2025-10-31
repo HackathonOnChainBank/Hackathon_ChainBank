@@ -18,13 +18,14 @@ function ProtectedRoute({ children, requireAuth = true, requireRole = null }) {
     );
   }
 
-  // 檢查是否需要登入
-  if (requireAuth && !isAuthenticated) {
-    return <Navigate to="/" replace />;
-  }
 
   // 檢查角色權限
   if (requireRole && role !== requireRole) {
+    return <Navigate to="/" replace />;
+  }
+
+  // 檢查是否需要登入
+  if (requireAuth && !isAuthenticated) {
     return <Navigate to="/" replace />;
   }
 

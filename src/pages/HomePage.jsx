@@ -197,7 +197,7 @@ function HomePage() {
   }
 
   const handleRoleSelect = (role, action) => {
-    login(role)
+    // 移除 login(role) 調用，只保留導航
     if (role === 'user') {
       if (action === 'login') {
         navigate('/login')
@@ -205,6 +205,7 @@ function HomePage() {
         navigate('/register')
       }
     } else {
+      login(role)
       navigate('/admin')
     }
   }
