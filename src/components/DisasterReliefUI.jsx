@@ -49,7 +49,7 @@ export default function DisasterReliefUI() {
           const walletAddress = event.data.data.userIdentifier || address
           console.log('💼 驗證成功')
           
-          // 從 localStorage 查找對應的用戶 ID
+          // 從 localStorage 查找對應的用戶 ID(因系統沒有做後端，所以先從本地資料找)
           let users = []
           let matchedUser = null
           try {
@@ -119,10 +119,9 @@ export default function DisasterReliefUI() {
 
   // 載入可用的救助計劃
   async function loadAvailablePrograms(userAddress) {
-    console.log('🔄 開始載入救助計劃, userAddress:', userAddress)
     try {
       if (!window.ethereum) {
-        console.error('❌ 找不到 window.ethereum')
+        console.error('找不到')
         return
       }
       
@@ -141,17 +140,12 @@ export default function DisasterReliefUI() {
       }
       
       const checkAddress = currentUser?.walletAddress || userAddress
-      
-      console.log('👤 當前登入用戶 ID:', currentUser?.userId)
-      console.log('💼 驗證檢查中...')
-      
+
       // 使用 DisasterRelief ABI
       const { DISASTER_RELIEF_ABI } = await import('../config/DisasterRelief_ABI')
       const contract = new ethers.Contract(CONTRACT_ADDRESS, DISASTER_RELIEF_ABI, signer)
       
       const programCount = await contract.programCounter()
-      console.log('📊 計劃總數:', programCount.toString())
-      
       const programs = []
       const count = Number(programCount)
       
@@ -191,12 +185,12 @@ export default function DisasterReliefUI() {
       if (programs.length === 1) {
         setSelectedProgram(programs[0])
         setAmount(programs[0].amountPerPerson)
-        console.log('🎯 自動選擇唯一計劃:', programs[0])
+        console.log('自動選擇唯一計劃:', programs[0])
       } else if (programs.length === 0) {
-        console.warn('⚠️ 沒有可用的救助計劃')
+        console.warn('沒有可用的救助計劃')
       }
     } catch (error) {
-      console.error('❌ 載入救助計劃失敗:', error)
+      console.error('載入救助計劃失敗:', error)
       setStatus('載入計劃失敗: ' + error.message)
     }
   }
@@ -216,7 +210,6 @@ export default function DisasterReliefUI() {
     try {
       // 獲取當前登入用戶的 shortUuid
       const currentUserShortUuid = localStorage.getItem('chainbank_current_user')
-      console.log('📦 當前用戶 ID:', currentUserShortUuid)
       
       if (!currentUserShortUuid) {
         throw new Error('找不到登入用戶資料，請先登入')
@@ -229,19 +222,13 @@ export default function DisasterReliefUI() {
       }
       
       const usersObj = JSON.parse(usersData)
-      console.log('📋 用戶資料類型:', typeof usersObj, Array.isArray(usersObj) ? '陣列' : '對象')
       
       // 直接用 shortUuid 作為 key 查找用戶
       const currentUser = usersObj[currentUserShortUuid]
       
       if (!currentUser) {
-        console.error('找不到 shortUuid:', currentUserShortUuid)
-        console.error('可用的 keys:', Object.keys(usersObj))
         throw new Error('找不到當前用戶資料')
       }
-      
-      console.log('👤 當前用戶:', currentUser.userId, currentUser.fullName)
-      console.log('💼 用戶地址:', currentUser.address)
       
       if (!currentUser.address && !currentUser.walletAddress) {
         console.error('用戶資料:', currentUser)
@@ -326,8 +313,6 @@ export default function DisasterReliefUI() {
       clearInterval(txPollRef.current)
       txPollRef.current = null
     }
-
-    // do an immediate check
     fetchTxStatus(hash)
 
     txPollRef.current = setInterval(async () => {
@@ -340,8 +325,6 @@ export default function DisasterReliefUI() {
       }
     }, 3000)
   }
-
-  // cleanup polling on unmount
   useEffect(() => {
     return () => {
       if (txPollRef.current) {
@@ -448,7 +431,7 @@ export default function DisasterReliefUI() {
           <div className="tx-info">
             <div>撥款金額: {amount} NTD_TOKEN</div>
             <div>
-              交易: <a href={`https://celo-alfajores.blockscout.com/tx/${txHash}`} target="_blank" rel="noopener noreferrer">
+              交易: <a href={`https://celo-sepolia.blockscout.com/tx/${txHash}`} target="_blank" rel="noopener noreferrer">
                 {txHash.slice(0, 10)}...{txHash.slice(-8)}
               </a>
             </div>
