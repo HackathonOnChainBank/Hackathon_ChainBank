@@ -9,50 +9,70 @@ import { ABI as CREDIT_CARD_ABI } from '../config/CreditCard_ABI'
 import './CreditCardPage.css'
 
 // 圖片載入組件（帶 fallback）
-function ImageWithFallback({ blobId, alt = 'Card Style' }) {
+function ImageWithFallback({ blobId, alt = 'Card Style', onImageLoadError }) {
   const [currentUrlIndex, setCurrentUrlIndex] = useState(0)
   const [showError, setShowError] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   
   const walrusUrls = [
+    `https://aggregator.walrus-testnet.walrus.space/v1/${blobId}`,
     `https://aggregator.walrus-testnet.walrus.space/v1/blobs/${blobId}`,
-    `https://aggregator.testnet.walrus.mirai.cloud/${blobId}`,
-    `https://aggregator.walrus-testnet.walrus.space/${blobId}`
+    `https://wal-aggregator.staketab.org/v1/${blobId}`,
+    `https://publisher.walrus-testnet.walrus.space/v1/${blobId}`
   ]
 
   const handleError = () => {
     if (currentUrlIndex < walrusUrls.length - 1) {
       setCurrentUrlIndex(currentUrlIndex + 1)
+      setIsLoading(true)
     } else {
       setShowError(true)
+      setIsLoading(false)
+      // 通知父組件圖片載入失敗
+      if (onImageLoadError) {
+        onImageLoadError(blobId)
+      }
     }
   }
 
+  const handleLoad = () => {
+    setIsLoading(false)
+  }
+
   if (showError) {
-    return (
-      <div style={{
-        background: '#f5f5f5',
-        padding: '20px',
-        borderRadius: '12px',
-        textAlign: 'center',
-        color: '#999'
-      }}>
-        無法載入卡片樣式
-      </div>
-    )
+    return null // 不顯示失敗的圖片
   }
 
   return (
-    <img 
-      src={walrusUrls[currentUrlIndex]} 
-      alt={alt}
-      style={{
-        width: '100%',
-        height: '200px',
-        objectFit: 'cover',
-        borderRadius: '12px'
-      }}
-      onError={handleError}
-    />
+    <>
+      {isLoading && (
+        <div style={{
+          width: '100%',
+          height: '200px',
+          background: '#f5f5f5',
+          borderRadius: '12px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#999'
+        }}>
+          ⏳ 載入中...
+        </div>
+      )}
+      <img 
+        src={walrusUrls[currentUrlIndex]} 
+        alt={alt}
+        style={{
+          width: '100%',
+          height: '200px',
+          objectFit: 'cover',
+          borderRadius: '12px',
+          display: isLoading ? 'none' : 'block'
+        }}
+        onError={handleError}
+        onLoad={handleLoad}
+      />
+    </>
   )
 }
 
@@ -70,6 +90,7 @@ function CreditCardPage() {
   const [cardStyles, setCardStyles] = useState([])
   const [loadingStyles, setLoadingStyles] = useState(false)
   const [selectedStyle, setSelectedStyle] = useState(null)
+  const [failedImages, setFailedImages] = useState(new Set())
 
   // 信用額度相關
   const [ntdBalance, setNtdBalance] = useState('0')
@@ -184,10 +205,27 @@ function CreditCardPage() {
     }
   }
 
+  // 處理圖片載入失敗
+  const handleImageLoadError = (blobId) => {
+    console.log('圖片載入失敗:', blobId)
+    setFailedImages(prev => new Set([...prev, blobId]))
+    
+    // 如果當前選中的樣式無法載入，自動選擇下一個可用的
+    if (selectedStyle === blobId) {
+      const availableStyles = cardStyles.filter(s => !failedImages.has(s.dataId) && s.dataId !== blobId)
+      if (availableStyles.length > 0) {
+        setSelectedStyle(availableStyles[0].dataId)
+      } else {
+        setSelectedStyle(null)
+      }
+    }
+  }
+
   // 從 Walrus 載入卡片樣式
   const loadCardStyles = async () => {
     console.log('開始載入卡片樣式')
     setLoadingStyles(true)
+    setFailedImages(new Set()) // 重置失敗記錄
     try {
       const walrusStorageAddress = import.meta.env.VITE_WALRUS_STORAGE_ADDRESS
       if (!walrusStorageAddress) {
@@ -221,7 +259,8 @@ function CreditCardPage() {
       console.log('管理員上傳的檔案:', files)
       
       // 過濾出圖片類型
-      const imageFiles = files.filter(f => f.fileType.startsWith('image/'))
+      const imageFiles = files.filter(f => f.fileType && f.fileType.startsWith('image'))
+      console.log('過濾後的圖片檔案:', imageFiles)
       setCardStyles(imageFiles)
       
       if (imageFiles.length > 0) {
@@ -441,20 +480,33 @@ function CreditCardPage() {
             ) : cardStyles.length === 0 ? (
               <p style={{ color: '#999' }}>目前沒有可用的卡片樣式</p>
             ) : (
-              <div className="card-styles-grid">
-                {cardStyles.map((style, index) => (
-                  <div 
-                    key={index}
-                    className={`card-style-item ${selectedStyle === style.dataId ? 'selected' : ''}`}
-                    onClick={() => setSelectedStyle(style.dataId)}
-                  >
-                    <ImageWithFallback blobId={style.dataId} alt={`Card Style ${index + 1}`} />
-                    <div className="style-overlay">
-                      {selectedStyle === style.dataId && <span className="selected-badge">✓ 已選擇</span>}
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <>
+                <div className="card-styles-grid">
+                  {cardStyles
+                    .filter(style => !failedImages.has(style.dataId))
+                    .map((style, index) => (
+                      <div 
+                        key={index}
+                        className={`card-style-item ${selectedStyle === style.dataId ? 'selected' : ''}`}
+                        onClick={() => setSelectedStyle(style.dataId)}
+                      >
+                        <ImageWithFallback 
+                          blobId={style.dataId} 
+                          alt={`Card Style ${index + 1}`}
+                          onImageLoadError={handleImageLoadError}
+                        />
+                        <div className="style-overlay">
+                          {selectedStyle === style.dataId && <span className="selected-badge">✓ 已選擇</span>}
+                        </div>
+                      </div>
+                    ))}
+                </div>
+                {cardStyles.filter(style => !failedImages.has(style.dataId)).length === 0 && (
+                  <p style={{ color: '#f44336', textAlign: 'center', padding: '2rem' }}>
+                    ⚠️ 所有卡片樣式都無法載入，請稍後再試
+                  </p>
+                )}
+              </>
             )}
             <button 
               className="btn btn-secondary" 
@@ -528,7 +580,11 @@ function CreditCardPage() {
                       </span>
                     </div>
                     <div className="application-preview-small">
-                      <ImageWithFallback blobId={app.cardStyle} alt="Card Style" />
+                      <ImageWithFallback 
+                        blobId={app.cardStyle} 
+                        alt="Card Style"
+                        onImageLoadError={handleImageLoadError}
+                      />
                     </div>
                     <div className="application-details">
                       <div className="detail-row">
