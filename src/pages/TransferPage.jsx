@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { useWallet } from '../hooks/useWallet'
 import { ABI as NTD_TOKEN_ABI } from '../config/NTD_TOKEN_ABI'
 import { getWalletAddress } from '../utils/walletStorage'
+import QRCode from 'qrcode'  // 新增導入
 import './TransferPage.css'
 
 function TransferPage() {
@@ -27,6 +28,9 @@ function TransferPage() {
   const [newRecipientId, setNewRecipientId] = useState('')
   const [newRecipientNote, setNewRecipientNote] = useState('')
   const [selectedSavedRecipient, setSelectedSavedRecipient] = useState('')
+
+  // QR 碼相關
+  const [qrCodeUrl, setQrCodeUrl] = useState('')
 
   // 載入約定轉帳名單
   useEffect(() => {
@@ -52,6 +56,15 @@ function TransferPage() {
       setStatus('✓ 錢包已自動載入')
     }
   }, [wallet])
+
+  // 生成 QR 碼
+  useEffect(() => {
+    if (currentUser?.shortUuid) {
+      QRCode.toDataURL(currentUser.shortUuid)
+        .then(url => setQrCodeUrl(url))
+        .catch(err => console.error('生成 QR 碼失敗:', err))
+    }
+  }, [currentUser?.shortUuid])
 
   // 當使用者輸入 ID 時，查詢對應的地址和資訊
   const handleRecipientIdChange = (id) => {
@@ -280,6 +293,18 @@ function TransferPage() {
           <div className="small">💡 提示：請輸入您註冊時設定的密碼</div>
         </div>
       )}
+      
+      <div className="card">
+        <h3>我的帳號</h3>
+        <div className="info-row" style={{justifyContent: 'center'}}>
+          <strong>{currentUser?.shortUuid}</strong>
+        </div>
+        {qrCodeUrl && (
+          <div style={{textAlign: 'center', marginTop: '1rem'}}>
+            <img src={qrCodeUrl} alt="帳號 ID QR 碼" style={{width: '150px', height: '150px'}} />
+          </div>
+        )}
+      </div>
 
       <div className="card">
         <div className="card-header-with-action">
