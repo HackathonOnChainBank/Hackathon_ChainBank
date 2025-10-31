@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useWallet } from '../hooks/useWallet'
 import { useState, useEffect } from 'react'
@@ -196,10 +196,14 @@ function HomePage() {
     }
   }
 
-  const handleRoleSelect = (role) => {
+  const handleRoleSelect = (role, action) => {
     login(role)
     if (role === 'user') {
-      navigate('/deposit')
+      if (action === 'login') {
+        navigate('/login')
+      } else if (action === 'register') {
+        navigate('/register')
+      }
     } else {
       navigate('/admin')
     }
@@ -379,18 +383,29 @@ function HomePage() {
       <div className="role-selection">
         <h2>選擇您的身份</h2>
         <div className="role-cards">
-          <div className="role-card" onClick={() => handleRoleSelect('user')}>
+          <div className="role-card">
             <div className="role-icon">👤</div>
             <h3>一般使用者</h3>
-            <p>存款管理、KYC 驗證、信用卡服務</p>
-            <button className="btn-primary">進入</button>
+            <p style={{ marginBottom: '15px' }}>存款管理、KYC 驗證、信用卡服務</p>
+            <div className="auth-buttons" style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+              <button className="btn-primary" onClick={() => handleRoleSelect('user', 'login')}>
+                登入
+              </button>
+              <button className="btn-primary" onClick={() => handleRoleSelect('user', 'register')}>
+                註冊
+              </button>
+            </div>
           </div>
 
-          <div className="role-card" onClick={() => handleRoleSelect('admin')}>
+          <div className="role-card">
             <div className="role-icon">⚙️</div>
             <h3>管理員</h3>
-            <p>系統管理、審核與監控</p>
-            <button className="btn-primary">進入</button>
+            <p style={{ marginBottom: '15px' }}>系統管理、審核與監控</p>
+            <div className="auth-buttons">
+              <button className="btn-primary" onClick={() => handleRoleSelect('admin')}>
+                進入
+              </button>
+            </div>
           </div>
         </div>
       </div>

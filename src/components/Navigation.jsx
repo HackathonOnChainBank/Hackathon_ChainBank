@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useAuth } from '../contexts/AuthContext'
 import './Navigation.css'
@@ -6,6 +6,7 @@ import './Navigation.css'
 function Navigation() {
   const { role, isAuthenticated, logout } = useAuth()
   const location = useLocation()
+  const navigate = useNavigate()
 
   const isActive = (path) => location.pathname === path
 
@@ -15,15 +16,8 @@ function Navigation() {
         <div className="nav-brand">
           <Link to="/">RWA 銀行系統</Link>
         </div>
-        
-        <div className="nav-links">
-          <Link to="/" className={isActive('/') ? 'active' : ''}>
-            首頁
-          </Link>
-          
-          <Link to="/disaster" className={isActive('/disaster') ? 'active' : ''}>
-            災難救助
-          </Link>
+
+        <div className="nav-links" style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
           
           {isAuthenticated && (
             <>
@@ -40,6 +34,9 @@ function Navigation() {
                   </Link>
                   <Link to="/creditcard-spend" className={isActive('/creditcard-spend') ? 'active' : ''}>
                     信用卡消費
+                  </Link>
+                  <Link to="/disaster" className={isActive('/disaster') ? 'active' : ''}>
+                    災難救助
                   </Link>
                 </>
               )}
@@ -66,18 +63,9 @@ function Navigation() {
               <span className="user-role">
                 {role === 'user' ? '使用者' : role === 'admin' ? '管理員' : '訪客'}
               </span>
-              <button onClick={logout} className="btn-logout">登出</button>
+              <button onClick={() => { logout(); navigate('/'); }} className="btn-logout">登出</button>
             </>
-          ) : (
-            <>
-              <Link to="/login" className="btn-nav btn-primary">
-                登入
-              </Link>
-              <Link to="/register" className="btn-nav btn-primary">
-                註冊
-              </Link>
-            </>
-          )}
+          ) : null} {/* 移除未登入時的登入/註冊按鈕 */}
         </div>
       </div>
     </nav>

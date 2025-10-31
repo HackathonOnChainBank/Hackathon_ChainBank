@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ethers } from 'ethers'
-import { useAuth } from '../contexts/AuthContext'
+import { useAuth } from '../contexts/AuthContext'  // 已存在
 import { useWallet } from '../hooks/useWallet'
 import { ABI as NTD_TOKEN_ABI } from '../config/NTD_TOKEN_ABI'
 import { ABI as WALRUS_STORAGE_ABI } from '../config/WalrusStorage_ABI'
@@ -58,7 +58,7 @@ function ImageWithFallback({ blobId, alt = 'Card Style' }) {
 
 function CreditCardPage() {
   const navigate = useNavigate()
-  const { isAuthenticated, currentUser } = useAuth()
+  const { isAuthenticated, currentUser, logout } = useAuth()  // 添加 logout
   const { wallet, loadWallet, provider } = useWallet()
 
   const [password, setPassword] = useState('')
@@ -359,6 +359,14 @@ function CreditCardPage() {
       <div className="page-header">
         <h1>💳 信用卡申請</h1>
         <p>根據您的 NTD 餘額申請專屬信用卡</p>
+        {/* 修改：確保登出後跳轉到首頁 */}
+        <button 
+          onClick={() => { logout(); setTimeout(() => navigate('/'), 0); }} 
+          className="btn-logout" 
+          style={{ position: 'absolute', top: '20px', right: '20px' }}
+        >
+          登出
+        </button>
       </div>
 
       {showPasswordInput && !wallet && (
