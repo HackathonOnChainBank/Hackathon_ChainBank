@@ -8,6 +8,10 @@ import { ABI as NTD_TOKEN_ABI } from '../config/NTD_TOKEN_ABI';
 const NTD_TOKEN_ADDRESS = '0x870F7e55A15e597342697652A536d5aA58ce932e';
 
 function AdminPage() {
+  // 添加錢包連接狀態
+  const [isConnected, setIsConnected] = useState(false);
+  const [address, setAddress] = useState('');
+
   const [pendingApprovals] = useState([
     { id: '1', type: 'KYC 驗證', user: '王小明', date: '2024-01-20', status: '待審核' },
     { id: '2', type: '信用卡申請', user: '李小華', date: '2024-01-19', status: '待審核' },
@@ -33,6 +37,42 @@ function AdminPage() {
     totalBudget: '',
     amountPerPerson: ''
   });
+
+  // 檢查錢包連接
+  useEffect(() => {
+    checkWalletConnection();
+  }, []);
+
+  const checkWalletConnection = async () => {
+    if (window.ethereum) {
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+        if (accounts.length > 0) {
+          setIsConnected(true);
+          setAddress(accounts[0]);
+        }
+      } catch (error) {
+        console.error('檢查錢包連接失敗:', error);
+      }
+    }
+  };
+
+  // 連接錢包
+  const connectWallet = async () => {
+    if (!window.ethereum) {
+      alert('請安裝 MetaMask 或其他 Web3 錢包');
+      return;
+    }
+
+    try {
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      setIsConnected(true);
+      setAddress(accounts[0]);
+    } catch (error) {
+      console.error('連接錢包失敗:', error);
+      alert('連接錢包失敗: ' + error.message);
+    }
+  };
 
   // 獲取 provider 和 signer
   const getContract = async () => {
@@ -236,11 +276,36 @@ function AdminPage() {
     }
   }, []);
 
+  // 如果未連接錢包，顯示登入提示
+  if (!isConnected) {
+    return (
+      <div className="admin-page">
+        <div className="page-header">
+          <h1>管理員控制台</h1>
+          <p>請先連接您的錢包以繼續</p>
+        </div>
+        <div style={{ textAlign: 'center', padding: '50px' }}>
+          <button 
+            className="btn-approve" 
+            onClick={connectWallet}
+            style={{ fontSize: '18px', padding: '15px 30px' }}
+          >
+            連接錢包
+          </button>
+          <p style={{ marginTop: '20px', color: '#666' }}>
+            需要 MetaMask 或其他 Web3 錢包來管理系統
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // 已連接，顯示完整頁面
   return (
     <div className="admin-page">
       <div className="page-header">
         <h1>管理員控制台</h1>
-        <p>系統監控與管理</p>
+        <p>系統監控與管理 - 已連接: {address.slice(0, 6)}...{address.slice(-4)}</p>
       </div>
 
       <div className="stats-grid">
