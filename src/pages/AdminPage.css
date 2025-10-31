@@ -1,0 +1,80 @@
+.admin-page {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.stat-icon {
+  font-size: 2.5rem;
+}
+
+.btn-approve,
+.btn-reject {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 0.5rem;
+  transition: all 0.3s;
+}
+
+.btn-approve {
+  background: #28a745;
+  color: white;
+}
+
+.btn-approve:hover {
+  background: #218838;
+}
+
+.btn-reject {
+  background: #dc3545;
+  color: white;
+}
+
+.btn-reject:hover {
+  background: #c82333;
+}
+
+.btn-refresh {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background: #6c757d;
+  color: white;
+  transition: all 0.3s;
+}
+
+.btn-refresh:hover {
+  background: #5a6268;
+}
+
+.btn-approve:disabled,
+.btn-reject:disabled,
+.btn-refresh:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.status.approved {
+  background: #d4edda;
+  color: #155724;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+.status.rejected {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
