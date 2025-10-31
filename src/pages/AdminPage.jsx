@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
+import { useAccount, useConnect } from 'wagmi'; // 添加 useConnect import
+import { ConnectButton } from '@rainbow-me/rainbowkit'; // 添加 import
 import './AdminPage.css';
 import WalrusUploader from '../components/WalrusUploader';
 import { DISASTER_RELIEF_ABI, DISASTER_RELIEF_ADDRESS } from '../config/DisasterRelief_ABI';
@@ -8,9 +10,14 @@ import { ABI as NTD_TOKEN_ABI } from '../config/NTD_TOKEN_ABI';
 const NTD_TOKEN_ADDRESS = '0x870F7e55A15e597342697652A536d5aA58ce932e';
 
 function AdminPage() {
-  // 添加錢包連接狀態
-  const [isConnected, setIsConnected] = useState(false);
-  const [address, setAddress] = useState('');
+  // 使用 wagmi 的 hooks
+  const { address, isConnected } = useAccount();
+  const { connectors, connect } = useConnect(); // 添加 useConnect
+
+  // 計算管理員地址（從 VITE_PRIVATE_KEY_1）
+  const adminPrivateKey = import.meta.env.VITE_PRIVATE_KEY_1;
+  const adminWallet = adminPrivateKey ? new ethers.Wallet(adminPrivateKey) : null;
+  const adminAddress = adminWallet ? adminWallet.address.toLowerCase() : '';
 
   const [pendingApprovals] = useState([
     { id: '1', type: 'KYC 驗證', user: '王小明', date: '2024-01-20', status: '待審核' },
@@ -38,43 +45,10 @@ function AdminPage() {
     amountPerPerson: ''
   });
 
-  // 檢查錢包連接
-  useEffect(() => {
-    checkWalletConnection();
-  }, []);
+  // 檢查是否是管理員
+  const isAdmin = isConnected && address && address.toLowerCase() === adminAddress;
 
-  const checkWalletConnection = async () => {
-    if (window.ethereum) {
-      try {
-        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-        if (accounts.length > 0) {
-          setIsConnected(true);
-          setAddress(accounts[0]);
-        }
-      } catch (error) {
-        console.error('檢查錢包連接失敗:', error);
-      }
-    }
-  };
-
-  // 連接錢包
-  const connectWallet = async () => {
-    if (!window.ethereum) {
-      alert('請安裝 MetaMask 或其他 Web3 錢包');
-      return;
-    }
-
-    try {
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      setIsConnected(true);
-      setAddress(accounts[0]);
-    } catch (error) {
-      console.error('連接錢包失敗:', error);
-      alert('連接錢包失敗: ' + error.message);
-    }
-  };
-
-  // 獲取 provider 和 signer
+  // 獲取 provider 和 signer（使用 wagmi 的 provider）
   const getContract = async () => {
     if (!window.ethereum) {
       alert('請安裝 MetaMask');
@@ -271,41 +245,48 @@ function AdminPage() {
   };
 
   useEffect(() => {
-    if (DISASTER_RELIEF_ADDRESS) {
+    if (isConnected && isAdmin && DISASTER_RELIEF_ADDRESS) {
       loadReliefPrograms();
     }
-  }, []);
+  }, [isConnected, isAdmin]); // 添加依賴項
 
-  // 如果未連接錢包，顯示登入提示
-  if (!isConnected) {
+  // 如果未連接或不是管理員，顯示登入提示
+  if (!isConnected || !isAdmin) {
     return (
       <div className="admin-page">
         <div className="page-header">
           <h1>管理員控制台</h1>
-          <p>請先連接您的錢包以繼續</p>
+          <p>請連接管理員錢包以繼續</p>
         </div>
         <div style={{ textAlign: 'center', padding: '50px' }}>
-          <button 
-            className="btn-approve" 
-            onClick={connectWallet}
-            style={{ fontSize: '18px', padding: '15px 30px' }}
-          >
-            連接錢包
-          </button>
+          {!isConnected ? (
+            <>
+              <p style={{ marginBottom: '20px', color: '#666' }}>
+                請連接您的錢包
+              </p>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <ConnectButton /> {/* 使用 RainbowKit 的 ConnectButton */}
+              </div>
+            </>
+          ) : (
+            <p style={{ color: '#ff6b6b' }}>
+              此地址無管理員權限。請切換到管理員錢包。
+            </p>
+          )}
           <p style={{ marginTop: '20px', color: '#666' }}>
-            需要 MetaMask 或其他 Web3 錢包來管理系統
+            需要 MetaMask 或其他 Web3 錢包，並使用管理員地址
           </p>
         </div>
       </div>
     );
   }
 
-  // 已連接，顯示完整頁面
+  // 已連接且是管理員，顯示完整頁面
   return (
     <div className="admin-page">
       <div className="page-header">
         <h1>管理員控制台</h1>
-        <p>系統監控與管理 - 已連接: {address.slice(0, 6)}...{address.slice(-4)}</p>
+        <p>系統監控與管理 - 已連接管理員: {address.slice(0, 6)}...{address.slice(-4)}</p>
       </div>
 
       <div className="stats-grid">
