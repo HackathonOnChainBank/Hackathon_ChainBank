@@ -23,6 +23,9 @@ function Navigation() {
             <>
               {role === 'user' && (
                 <>
+                  <Link to="/" className={isActive('/deposit') ? 'active' : ''}>
+                    首頁
+                  </Link>
                   <Link to="/deposit" className={isActive('/deposit') ? 'active' : ''}>
                     存款
                   </Link>
@@ -63,7 +66,7 @@ function Navigation() {
               <span className="user-role">
                 {role === 'user' ? '使用者' : role === 'admin' ? '管理員' : '訪客'}
               </span>
-              <button onClick={() => { logout(); navigate('/'); }} className="btn-logout">登出</button>
+              <button onClick={() => { navigate('/'); logout(); }} className="btn-logout">登出</button>
             </>
           ) : null} {/* 移除未登入時的登入/註冊按鈕 */}
         </div>

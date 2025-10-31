@@ -20,7 +20,7 @@ function ProtectedRoute({ children, requireAuth = true, requireRole = null }) {
 
   // 檢查是否需要登入
   if (requireAuth && !isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   // 檢查角色權限
