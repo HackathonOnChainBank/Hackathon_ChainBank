@@ -15,7 +15,7 @@ export default function DisasterReliefPage() {
           <h2>📋 申請條件</h2>
           <ul>
             <li>✅ 必須年滿 18 歲</li>
-            <li>✅ 非美國居民</li>
+            <li>✅ 非印度居民</li>
             <li>✅ 通過 Self Protocol 身份驗證</li>
             <li>✅ 每個身份只能領取一次</li>
           </ul>

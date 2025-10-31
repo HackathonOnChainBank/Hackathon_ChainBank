@@ -18,9 +18,9 @@ export default function Home() {
   const [toastMessage, setToastMessage] = useState("");
   const [selfApp, setSelfApp] = useState<SelfApp | null>(null);
   const [universalLink, setUniversalLink] = useState("");
-  const [userId] = useState("0x5199574A9004171C654fF4F679eBfaDDF8e1fBB4");
-  // 排除不是美國人
-  const excludedCountries = useMemo(() => [countries.UNITED_STATES], []);
+  const [userId] = useState("0x2cf98213F4A3a0Fb6F849Fd9B36e86f24e941B7e");
+  // 排除不是台灣人
+  const excludedCountries = useMemo(() => [countries.INDIA], []);
 
   // Use useEffect to ensure code only executes on the client side
   useEffect(() => {
@@ -39,7 +39,7 @@ export default function Home() {
         disclosures: {
         // what you want to verify from users' identity
           minimumAge: 18,
-          // ofac: true,
+          ofac: false,
           excludedCountries: excludedCountries,
           // what you want users to reveal
           // name: false,
