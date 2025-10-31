@@ -21,7 +21,7 @@ export default function DisasterReliefPage() {
           </ul>
           <div className="contract-info">
             <p><strong>合約地址:</strong></p>
-            <code>0x37ACE2979C7d6c395AF0D3f400a878fA858b724a</code>
+            <code>0x215619cE23bc0bCC1d154900903BAbEc07D8B924</code>
             <p><strong>網路:</strong> Celo Sepolia Testnet</p>
           </div>
         </div>

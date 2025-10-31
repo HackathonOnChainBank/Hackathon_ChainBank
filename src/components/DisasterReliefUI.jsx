@@ -91,7 +91,7 @@ export default function DisasterReliefUI() {
           }, 500)
           
           // 通知使用者
-          alert(`✓ 身份驗證成功！已自動帶入您的用戶 ID: ${userId}`)
+          alert(`✓ 身份驗證成功！已自動帶入您的用戶 ID`)
         }
       }
 
