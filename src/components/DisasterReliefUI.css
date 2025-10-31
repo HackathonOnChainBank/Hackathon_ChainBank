@@ -1,0 +1,195 @@
+.disaster-ui {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.disaster-ui .status {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #f0f9ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  font-weight: 600;
+  color: #1e40af;
+  font-size: 14px;
+}
+
+.disaster-ui .wallet {
+  margin-bottom: 20px;
+  padding: 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #374151;
+}
+
+.disaster-ui .verification {
+  margin-bottom: 24px;
+  padding: 20px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.disaster-ui .verification h3 {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+  color: #111827;
+}
+
+.disaster-ui .verification p {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.disaster-ui .verification button {
+  padding: 10px 24px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.disaster-ui .verification button:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.disaster-ui .verification button:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.disaster-ui .verified-box {
+  margin-top: 16px;
+  padding: 16px;
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 8px;
+}
+
+.disaster-ui .verified-box strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #15803d;
+  font-size: 16px;
+}
+
+.disaster-ui .verified-box div {
+  font-size: 12px;
+  color: #166534;
+  margin: 4px 0;
+  font-family: monospace;
+  word-break: break-all;
+}
+
+.disaster-ui .payout {
+  padding: 20px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.disaster-ui .payout h3 {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+  color: #111827;
+}
+
+.disaster-ui .payout p {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.disaster-ui .payout label {
+  display: block;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: #374151;
+  font-weight: 500;
+}
+
+.disaster-ui .payout label .token-label {
+  color: #10b981;
+  font-weight: 600;
+  font-size: 13px;
+  margin-left: 4px;
+}
+
+.disaster-ui .payout input {
+  width: 100%;
+  padding: 10px 12px;
+  margin-top: 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: monospace;
+  transition: border-color 0.2s;
+}
+
+.disaster-ui .payout input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.disaster-ui .payout button {
+  padding: 12px 24px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.disaster-ui .payout button:hover:not(:disabled) {
+  background: #059669;
+}
+
+.disaster-ui .payout button:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.disaster-ui .tx-info {
+  margin-top: 16px;
+  padding: 12px;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #075985;
+}
+
+.disaster-ui .tx-info > div {
+  margin: 4px 0;
+}
+
+.disaster-ui .tx-info > div:first-child {
+  font-weight: 600;
+  color: #10b981;
+  font-size: 15px;
+}
+
+.disaster-ui .tx-info a {
+  color: #0284c7;
+  text-decoration: none;
+  font-weight: 600;
+  font-family: monospace;
+}
+
+.disaster-ui .tx-info a:hover {
+  text-decoration: underline;
+}
