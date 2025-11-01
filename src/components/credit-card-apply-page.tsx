@@ -401,12 +401,7 @@ export function CreditCardApplyPage() {
 
         {showPasswordInput && !wallet ? (
           <Card className="bg-gradient-to-br from-slate-900/80 to-slate-800/80 border border-slate-700/50 backdrop-blur-sm p-8 mb-6">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500/20 to-blue-500/20">
-                <CreditCard className="h-6 w-6 text-purple-300" />
-              </div>
-              <h2 className="text-2xl text-slate-100">載入您的錢包</h2>
-            </div>
+            <h3 className="text-slate-100 mb-6 text-lg font-bold">載入您的錢包</h3>
             <form onSubmit={handleLoadWallet} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-slate-300">密碼</Label>
@@ -427,8 +422,8 @@ export function CreditCardApplyPage() {
               >
                 {loading ? '🔄 載入中...' : '🔓 載入錢包'}
               </Button>
+              <p className="text-slate-400 text-sm">💡 提示：請輸入您註冊時設定的密碼</p>
             </form>
-            <p className="text-slate-400 text-sm mt-4">💡 提示：請輸入您註冊時設定的密碼</p>
           </Card>
         ) : wallet ? (
           <>

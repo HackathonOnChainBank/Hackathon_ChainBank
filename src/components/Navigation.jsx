@@ -1,14 +1,17 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useAuth } from '../contexts/AuthContext'
+import { useState } from 'react'
 import './Navigation.css'
 
 function Navigation() {
   const { role, isAuthenticated, logout } = useAuth()
   const location = useLocation()
   const navigate = useNavigate()
+  const [showCreditCardMenu, setShowCreditCardMenu] = useState(false)
 
   const isActive = (path) => location.pathname === path
+  const isCreditCardActive = isActive('/creditcard') || isActive('/creditcard-spend')
 
   return (
     <nav className="navigation">
@@ -32,12 +35,25 @@ function Navigation() {
                   <Link to="/transfer" className={isActive('/transfer') ? 'active' : ''}>
                     一般轉帳
                   </Link>
-                  <Link to="/creditcard" className={isActive('/creditcard') ? 'active' : ''}>
-                    信用卡申請
-                  </Link>
-                  <Link to="/creditcard-spend" className={isActive('/creditcard-spend') ? 'active' : ''}>
-                    信用卡消費
-                  </Link>
+                  <div 
+                    className="nav-dropdown"
+                    onMouseEnter={() => setShowCreditCardMenu(true)}
+                    onMouseLeave={() => setShowCreditCardMenu(false)}
+                  >
+                    <button className={`nav-dropdown-trigger ${isCreditCardActive ? 'active' : ''}`}>
+                      信用卡服務 ▾
+                    </button>
+                    {showCreditCardMenu && (
+                      <div className="nav-dropdown-menu">
+                        <Link to="/creditcard" className="nav-dropdown-item">
+                          💳 信用卡申請
+                        </Link>
+                        <Link to="/creditcard-spend" className="nav-dropdown-item">
+                          💰 信用卡消費
+                        </Link>
+                      </div>
+                    )}
+                  </div>
                   <Link to="/disaster" className={isActive('/disaster') ? 'active' : ''}>
                     災難救助
                   </Link>

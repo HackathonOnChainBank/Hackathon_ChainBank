@@ -1,5 +1,5 @@
 import { Button } from "./ui/button";
-import { Wallet, Menu } from "lucide-react";
+import { Wallet, Menu, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from '../contexts/AuthContext';
 
@@ -10,19 +10,23 @@ type HeaderProps = {
 
 export function Header({ currentPage, onNavigate }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showCreditCardMenu, setShowCreditCardMenu] = useState(false);
   const { logout } = useAuth();
   
   const navLinks = [
     { name: "首頁", page: "home" },
     { name: "資訊頁面", page: "info" },
-    { name: "登入", page: "login" },
-    { name: "註冊", page: "register" },
     { name: "災難救助", page: "disaster-relief" },
     { name: "存款", page: "deposit" },
-    { name: "一般轉帳", page: "transfer" },
+    { name: "一般轉帳", page: "transfer" }
+  ];
+
+  const creditCardLinks = [
     { name: "信用卡申請", page: "credit-card-apply" },
     { name: "信用卡消費", page: "credit-card-spending" }
   ];
+
+  const isCreditCardPage = currentPage === "credit-card-apply" || currentPage === "credit-card-spending";
   
   const handleLogout = () => {
     logout();
@@ -61,10 +65,60 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                 {link.name}
               </button>
             ))}
+            
+            {/* 信用卡服務下拉選單 */}
+            <div 
+              className="relative"
+              onMouseEnter={() => setShowCreditCardMenu(true)}
+              onMouseLeave={() => setShowCreditCardMenu(false)}
+            >
+              <button
+                className={`flex items-center gap-1 transition-colors ${
+                  isCreditCardPage 
+                    ? 'text-purple-400' 
+                    : 'text-slate-400 hover:text-purple-300'
+                }`}
+              >
+                信用卡服務
+                <ChevronDown className="h-4 w-4" />
+              </button>
+              
+              {showCreditCardMenu && (
+                <div className="absolute top-full left-0 mt-2 w-48 bg-slate-900 border border-slate-700 rounded-lg shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                  {creditCardLinks.map((link, index) => (
+                    <button
+                      key={index}
+                      onClick={() => onNavigate(link.page)}
+                      className={`w-full text-left px-4 py-3 transition-colors border-b border-slate-800 last:border-b-0 ${
+                        currentPage === link.page
+                          ? 'bg-purple-600/20 text-purple-300'
+                          : 'text-slate-300 hover:bg-slate-800 hover:text-purple-300'
+                      }`}
+                    >
+                      {link.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
           
-          {/* CTA Button */}
-          <div className="hidden md:flex items-center gap-4">
+          {/* CTA Buttons */}
+          <div className="hidden md:flex items-center gap-2">
+            <Button 
+              variant="outline"
+              className="bg-transparent border-slate-700 text-slate-300 hover:bg-white/5"
+              onClick={() => onNavigate("login")}
+            >
+              登入
+            </Button>
+            <Button 
+              variant="outline"
+              className="bg-transparent border-slate-700 text-slate-300 hover:bg-white/5"
+              onClick={() => onNavigate("register")}
+            >
+              註冊
+            </Button>
             <Button 
               variant="outline"
               className="bg-transparent border-slate-700 text-slate-300 hover:bg-white/5"
@@ -103,10 +157,52 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                   {link.name}
                 </button>
               ))}
-              <div className="pt-4 border-t border-slate-800 space-y-2">
+              
+              {/* 信用卡服務 */}
+              <div className="border-t border-slate-800 pt-4">
+                <div className="text-slate-500 text-sm mb-2 px-2">信用卡服務</div>
+                {creditCardLinks.map((link, index) => (
+                  <button
+                    key={index}
+                    onClick={() => {
+                      onNavigate(link.page);
+                      setIsMenuOpen(false);
+                    }}
+                    className={`w-full text-left transition-colors py-2 pl-4 ${
+                      currentPage === link.page 
+                        ? 'text-purple-400' 
+                        : 'text-slate-400 hover:text-purple-300'
+                    }`}
+                  >
+                    {link.name}
+                  </button>
+                ))}
+              </div>
+              
+              <div className="pt-4 border-t border-slate-800 flex gap-2">
                 <Button 
                   variant="outline"
-                  className="w-full bg-transparent border-slate-700 text-slate-300"
+                  className="flex-1 bg-transparent border-slate-700 text-slate-300 hover:bg-white/5"
+                  onClick={() => {
+                    onNavigate("login");
+                    setIsMenuOpen(false);
+                  }}
+                >
+                  登入
+                </Button>
+                <Button 
+                  variant="outline"
+                  className="flex-1 bg-transparent border-slate-700 text-slate-300 hover:bg-white/5"
+                  onClick={() => {
+                    onNavigate("register");
+                    setIsMenuOpen(false);
+                  }}
+                >
+                  註冊
+                </Button>
+                <Button 
+                  variant="outline"
+                  className="flex-1 bg-transparent border-slate-700 text-slate-300 hover:bg-white/5"
                   onClick={() => {
                     handleLogout();
                     setIsMenuOpen(false);

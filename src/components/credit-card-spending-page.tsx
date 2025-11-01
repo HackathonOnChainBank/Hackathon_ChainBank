@@ -404,43 +404,42 @@ export function CreditCardSpendingPage() {
         <div className="mb-8">
           <h1 className="text-4xl sm:text-5xl mb-4">
             <span className="bg-gradient-to-r from-slate-200 via-purple-200 to-blue-200 bg-clip-text text-transparent">
-              <span style={{ color: 'initial' }}>💳</span> 信用卡消費與還款
+              <span style={{ color: 'initial' }}></span> 信用卡消費與還款
             </span>
           </h1>
           <p className="text-slate-400 text-lg">使用您的信用卡進行消費，並隨時還款</p>
         </div>
 
         {showPasswordInput && !wallet && (
-          <Card className="bg-gradient-to-br from-slate-900/80 to-slate-800/80 border border-slate-700/50 backdrop-blur-sm p-8 mb-6">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500/20 to-blue-500/20">
-                <CreditCard className="h-6 w-6 text-purple-300" />
-              </div>
-              <h2 className="text-2xl text-slate-100">載入您的錢包</h2>
+          <div className="flex justify-center mb-6">
+            <div className="w-full max-w-md">
+              <Card className="bg-gradient-to-br from-slate-900/80 to-slate-800/80 border border-slate-700/50 backdrop-blur-sm p-8">
+                <h3 className="text-slate-100 mb-6 text-lg font-bold">載入您的錢包</h3>
+                <form onSubmit={handleLoadWallet} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="password" className="text-slate-300">密碼</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="輸入您的密碼"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      autoFocus
+                      className="bg-slate-800/50 border-slate-600 text-slate-200 placeholder:text-slate-500"
+                    />
+                  </div>
+                  <Button
+                    type="submit"
+                    className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 border-0"
+                    disabled={loading}
+                  >
+                    {loading ? '🔄 載入中...' : '🔓 載入錢包'}
+                  </Button>
+                  <p className="text-slate-400 text-sm">💡 提示：請輸入您註冊時設定的密碼</p>
+                </form>
+              </Card>
             </div>
-            <form onSubmit={handleLoadWallet} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-slate-300">密碼</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="輸入您的密碼"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoFocus
-                  className="bg-slate-800/50 border-slate-600 text-slate-200 placeholder:text-slate-500"
-                />
-              </div>
-              <Button
-                type="submit"
-                className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 border-0"
-                disabled={loading}
-              >
-                {loading ? '🔄 載入中...' : '🔓 載入錢包'}
-              </Button>
-            </form>
-            <p className="text-slate-400 text-sm mt-4">💡 提示：請輸入您註冊時設定的密碼</p>
-          </Card>
+          </div>
         )}
 
         {wallet && (
@@ -448,7 +447,7 @@ export function CreditCardSpendingPage() {
             {/* 信用額度資訊 */}
             <Card className="bg-gradient-to-br from-slate-900/80 to-slate-800/80 border border-slate-700/50 backdrop-blur-sm p-8 mb-6">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-slate-100">💰 您的資產與信用額度</h3>
+                <h3 className="text-slate-100 text-lg font-bold">您的資產與信用額度</h3>
                 <Button
                   className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 border-0"
                   onClick={loadCreditInfo}
@@ -460,20 +459,20 @@ export function CreditCardSpendingPage() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="text-center">
-                  <div className="text-slate-400 text-sm mb-2">信用額度</div>
-                  <div className="text-purple-400 text-2xl font-bold">
+                  <div className="text-slate-400  text-sm mb-2">信用額度</div>
+                  <div className="text-slate-300 text-purple-400 text-2xl font-bold">
                     {loadingCredit ? '載入中...' : `${parseFloat(creditInfo.limit).toLocaleString()} NTD`}
                   </div>
                 </div>
                 <div className="text-center">
                   <div className="text-slate-400 text-sm mb-2">已使用額度</div>
-                  <div className="text-red-400 text-2xl font-bold">
+                  <div className="text-slate-300 text-2xl font-bold">
                     {loadingCredit ? '載入中...' : `${parseFloat(creditInfo.balance).toLocaleString()} NTD`}
                   </div>
                 </div>
                 <div className="text-center">
                   <div className="text-slate-400 text-sm mb-2">可用額度</div>
-                  <div className="text-green-400 text-2xl font-bold">
+                  <div className="text-slate-300 text-2xl font-bold">
                     {loadingCredit ? '載入中...' : `${parseFloat(creditInfo.available).toLocaleString()} NTD`}
                   </div>
                 </div>
@@ -483,11 +482,11 @@ export function CreditCardSpendingPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
               {/* 消費表單 */}
               <Card className="bg-gradient-to-br from-slate-900/80 to-slate-800/80 border border-slate-700/50 backdrop-blur-sm p-8">
-                <h3 className="text-slate-100 mb-6">💸 信用卡消費</h3>
+                <h3 className="text-slate-100 mb-6 text-lg font-bold">信用卡消費</h3>
                 <form onSubmit={handleSpend}>
                   <div className="space-y-4">
                     <div>
-                      <Label className="text-slate-300">商家</Label>
+                      <Label className="text-slate-300 mb-2 block">商家</Label>
                       {!showAddMerchant ? (
                         <Select value={selectedMerchantAccount} onValueChange={(value) => {
                           if (value === 'ADD_NEW') {
@@ -499,14 +498,27 @@ export function CreditCardSpendingPage() {
                           <SelectTrigger className="w-full bg-slate-800/50 border-slate-600 text-slate-200">
                             <SelectValue placeholder="-- 請選擇商家 --" />
                           </SelectTrigger>
-                          <SelectContent className="bg-slate-800 border-slate-600">
+                          <SelectContent className="bg-slate-900 border border-slate-600 shadow-xl max-h-[300px] overflow-y-auto">
                             {merchantList.map((merchant: any, index: number) => (
-                              <SelectItem key={index} value={merchant.account} className="text-slate-200 hover:bg-slate-700">
-                                {merchant.name}
+                              <SelectItem 
+                                key={index} 
+                                value={merchant.account} 
+                                className="text-slate-200 hover:bg-gradient-to-r hover:from-purple-600/20 hover:to-blue-600/20 focus:bg-gradient-to-r focus:from-purple-600/30 focus:to-blue-600/30 cursor-pointer py-3 px-4"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <span className="text-lg">🏪</span>
+                                  <span>{merchant.name}</span>
+                                </div>
                               </SelectItem>
                             ))}
-                            <SelectItem value="ADD_NEW" className="text-slate-200 hover:bg-slate-700">
-                              ➕ 新增商家
+                            <SelectItem 
+                              value="ADD_NEW" 
+                              className="text-purple-300 hover:bg-gradient-to-r hover:from-purple-600/30 hover:to-blue-600/30 focus:bg-gradient-to-r focus:from-purple-600/40 focus:to-blue-600/40 cursor-pointer py-3 px-4 border-t border-slate-700 mt-1"
+                            >
+                              <div className="flex items-center gap-2 font-semibold">
+                                <span className="text-lg">➕</span>
+                                <span>新增商家</span>
+                              </div>
                             </SelectItem>
                           </SelectContent>
                         </Select>
@@ -551,7 +563,7 @@ export function CreditCardSpendingPage() {
                     </div>
 
                     <div>
-                      <Label className="text-slate-300">消費金額 (NTD)</Label>
+                      <Label className="text-slate-300 mb-2 block">消費金額 (NTD)</Label>
                       <Input
                         type="number"
                         placeholder="請輸入消費金額"
@@ -566,7 +578,7 @@ export function CreditCardSpendingPage() {
 
                     <div className="bg-slate-800/50 p-3 rounded-lg">
                       <span className="text-slate-400 text-sm">可用額度: </span>
-                      <span className="text-green-400 font-semibold">{parseFloat(creditInfo.available).toLocaleString()} NTD</span>
+                      <span className=" font-semibold text-purple-400">{parseFloat(creditInfo.available).toLocaleString()} NTD</span>
                     </div>
 
                     <Button
@@ -574,7 +586,7 @@ export function CreditCardSpendingPage() {
                       className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 border-0"
                       disabled={spending || !selectedMerchantAccount || !spendAmount || parseFloat(creditInfo.limit) === 0}
                     >
-                      {spending ? '⏳ 處理中...' : '💳 確認消費'}
+                      {spending ? '⏳ 處理中...' : '確認消費'}
                     </Button>
                   </div>
                 </form>
@@ -582,11 +594,11 @@ export function CreditCardSpendingPage() {
 
               {/* 還款表單 */}
               <Card className="bg-gradient-to-br from-slate-900/80 to-slate-800/80 border border-slate-700/50 backdrop-blur-sm p-8">
-                <h3 className="text-slate-100 mb-6">💰 信用卡還款</h3>
+                <h3 className="text-slate-100 mb-6 text-lg font-bold">信用卡還款</h3>
                 <form onSubmit={handleRepay}>
                   <div className="space-y-4">
                     <div>
-                      <Label className="text-slate-300">還款金額 (NTD)</Label>
+                      <Label className="text-slate-300 mb-2 block">還款金額 (NTD)</Label>
                       <Input
                         type="number"
                         placeholder="請輸入還款金額"
@@ -601,23 +613,24 @@ export function CreditCardSpendingPage() {
 
                     <div className="bg-slate-800/50 p-3 rounded-lg">
                       <span className="text-slate-400 text-sm">當前欠款: </span>
-                      <span className="text-red-400 font-semibold">{parseFloat(creditInfo.balance).toLocaleString()} NTD</span>
+                      <span className="text-red-400 font-semibold  text-purple-400">{parseFloat(creditInfo.balance).toLocaleString()} NTD</span>
                     </div>
 
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 items-center p-3 mg-1">
                       <Button
                         type="button"
                         onClick={() => setRepayAmount(creditInfo.balance)}
                         disabled={repaying || parseFloat(creditInfo.balance) === 0}
-                        className="flex-1 bg-blue-600 hover:bg-blue-500"
+                        className="flex-1 bg-blue-600 hover:bg-blue-500 font-semibold"
                       >
                         全額還款
                       </Button>
+                      <div className="h-10 w-px bg-gradient-to-b from-slate-600 via-slate-500 to-slate-600"></div>
                       <Button
                         type="button"
                         onClick={() => setRepayAmount((parseFloat(creditInfo.balance) / 2).toFixed(2))}
                         disabled={repaying || parseFloat(creditInfo.balance) === 0}
-                        className="flex-1 bg-cyan-600 hover:bg-cyan-500"
+                        className="flex-1 bg-cyan-600 hover:bg-cyan-500 font-semibold"
                       >
                         50%
                       </Button>
@@ -625,10 +638,10 @@ export function CreditCardSpendingPage() {
 
                     <Button
                       type="submit"
-                      className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-500 hover:to-blue-500 border-0"
+                      className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 border-0"
                       disabled={repaying || !repayAmount || parseFloat(creditInfo.balance) === 0}
                     >
-                      {repaying ? '⏳ 處理中...' : '💰 確認還款'}
+                      {repaying ? '⏳ 處理中...' : '確認還款'}
                     </Button>
                   </div>
                 </form>
@@ -636,7 +649,7 @@ export function CreditCardSpendingPage() {
             </div>
 
             {/* 消費記錄 */}
-            <Card className="bg-gradient-to-br from-slate-900/80 to-slate-800/80 border border-slate-700/50 backdrop-blur-sm p-8">
+            <Card className="bg-gradient-to-br from-slate-900/80 to-slate-800/80 border border-slate-700/50 backdrop-blur-sm p-8 mt-4">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-slate-100">📋 消費記錄 ({spendRecords.length})</h3>
                 <Button
@@ -654,31 +667,55 @@ export function CreditCardSpendingPage() {
               ) : spendRecords.length === 0 ? (
                 <div className="text-slate-400 text-center py-8">目前沒有消費記錄</div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-slate-300">
-                    <thead>
-                      <tr className="border-b border-slate-700">
-                        <th className="text-left py-3">序號</th>
-                        <th className="text-left py-3">商家名稱</th>
-                        <th className="text-left py-3">消費金額</th>
-                        <th className="text-left py-3">消費時間</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {spendRecords.map((record: any) => (
-                        <tr key={record.index} className="border-b border-slate-800">
-                          <td className="py-3">#{record.index + 1}</td>
-                          <td className="py-3">
-                            <span className="font-semibold">{getMerchantName(record.merchant)}</span>
-                          </td>
-                          <td className="py-3 text-green-400">
-                            {parseFloat(record.amount).toLocaleString()} NTD
-                          </td>
-                          <td className="py-3">{record.timestamp}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                <div className="space-y-3">
+                  {spendRecords.map((record: any, idx: number) => (
+                    <div 
+                      key={record.index}
+                      className="bg-gradient-to-r from-slate-800/50 to-slate-800/30 border border-slate-700/50 rounded-lg p-4 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/10 transition-all duration-300"
+                    >
+                      <div className="flex items-center justify-between gap-4">
+                        {/* 序號 */}
+                        <div className="flex-shrink-0">
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600/30 to-blue-600/30 flex items-center justify-center border border-purple-500/30">
+                            <span className="text-purple-300 font-bold text-lg">#{record.index + 1}</span>
+                          </div>
+                        </div>
+
+                        {/* 商家名稱 */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center flex-shrink-0">
+                              <span className="text-xl">🏪</span>
+                            </div>
+                            <div>
+                              <div className="text-slate-400 text-xs mb-1">商家</div>
+                              <div className="font-semibold text-slate-200 truncate">{getMerchantName(record.merchant)}</div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* 消費金額 */}
+                        <div className="flex-shrink-0 text-right">
+                          <div className="text-slate-400 text-xs mb-1">消費金額</div>
+                          <div className="flex items-center gap-2 justify-end h-10">
+                            <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent leading-none">
+                              {parseFloat(record.amount).toLocaleString()}
+                            </span>
+                            <span className="text-slate-400 text-sm">NTD</span>
+                          </div>
+                        </div>
+
+                        {/* 消費時間 */}
+                        <div className="flex-shrink-0 text-right min-w-[140px]">
+                          <div className="text-slate-400 text-xs mb-1">交易時間</div>
+                          <div className="flex items-center gap-2 justify-end text-slate-400 text-sm h-10">
+                            <span></span>
+                            <span>{record.timestamp}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </Card>
@@ -697,14 +734,14 @@ export function CreditCardSpendingPage() {
         )}
 
         {/* Note */}
-        <div className="mt-8 text-center">
+        <div className="mt-8 text-right">
           <div className="bg-slate-800/50 p-6 rounded-lg">
-            <h4 className="text-slate-100 mb-4">💡 使用說明：</h4>
-            <ul className="text-slate-400 text-sm space-y-1">
-              <li>💳 <strong>消費：</strong>使用信用卡向商家付款，由合約代墊金額</li>
-              <li>💰 <strong>還款：</strong>使用您的 NTD_TOKEN 還款，減少欠款餘額</li>
-              <li>📊 消費金額不能超過可用額度</li>
-              <li>🔄 還款後可用額度會立即恢復</li>
+            <h4 className="text-slate-100 mb-4">使用說明：</h4>
+            <ul className="text-slate-300 text-sm space-y-1 list-none">
+              <li><strong className="text-slate-200">消費：</strong>使用信用卡向商家付款，由合約代墊金額</li>
+              <li><strong className="text-slate-200">還款：</strong>使用您的 NTD_TOKEN 還款，減少欠款餘額</li>
+              <li><strong className="text-slate-200">注意：</strong>消費金額不能超過可用額度</li>
+              <li><strong className="text-slate-200">還款後：</strong>可用額度會立即恢復</li>
             </ul>
           </div>
         </div>
