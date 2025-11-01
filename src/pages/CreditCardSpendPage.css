@@ -1,0 +1,767 @@
+.creditcard-spend-page {
+  padding: 2rem 3rem;
+  max-width: 1600px; /* 加寬顯示區域 */
+  margin: 0 auto;
+  background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+  min-height: 100vh;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.page-header h1 {
+  font-size: 2.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+}
+
+.page-header p {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+/* 與 CreditCardPage 對齊的小卡樣式 */
+.balance-card {
+  background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+  color: #333;
+  text-align: center;
+  border: 2px solid #e0e0e0;
+}
+
+.balance-card h3 {
+  color: #333;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.balance-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.balance-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+  padding: 1.5rem 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  min-height: 120px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.25);
+}
+
+.balance-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.35);
+}
+
+.balance-item.highlight-item {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  box-shadow: 0 4px 16px rgba(255, 215, 0, 0.3);
+}
+
+.balance-item.highlight-item:hover {
+  box-shadow: 0 8px 24px rgba(255, 215, 0, 0.4);
+}
+
+.balance-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.95);
+  white-space: nowrap;
+}
+
+.balance-amount {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.balance-number {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #ffffff;
+  white-space: nowrap;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.balance-number.highlight-number {
+  color: #333;
+  text-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);
+}
+
+.balance-unit {
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+  white-space: nowrap;
+}
+
+.highlight-item .balance-label {
+  color: rgba(51, 51, 51, 0.85);
+}
+
+.highlight-item .balance-unit {
+  color: rgba(51, 51, 51, 0.85);
+}
+
+/* 卡片樣式 */
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.card h3 {
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+/* 信用卡資訊卡 */
+.credit-info-card {
+  background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+  color: #333;
+  text-align: center;
+  border: 2px solid #e0e0e0;
+}
+
+.credit-info-card h3 {
+  color: #333;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.credit-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+  padding: 1.5rem 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  min-height: 120px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.25);
+}
+
+.info-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.35);
+}
+
+.info-item.highlight {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  box-shadow: 0 4px 16px rgba(255, 215, 0, 0.3);
+}
+
+.info-item.highlight:hover {
+  box-shadow: 0 8px 24px rgba(255, 215, 0, 0.4);
+}
+
+.info-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.95);
+  white-space: nowrap;
+  margin-bottom: 0;
+}
+
+.info-value {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #ffffff;
+  white-space: nowrap;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.info-item.highlight .info-label {
+  color: rgba(51, 51, 51, 0.85);
+}
+
+.info-item.highlight .info-value {
+  color: #333;
+  text-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);
+}
+
+/* 兩欄布局 */
+.two-column-layout {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem; /* 稍微加大間距讓視覺更舒適 */
+  margin-bottom: 2rem;
+  align-items: stretch;
+}
+
+/* 放大兩張卡片的視覺 */
+.two-column-layout .card {
+  padding: 2.5rem; /* 加大內距 */
+  margin-bottom: 0;
+  min-width: 0; /* 防止內容溢出 */
+}
+
+.two-column-layout .card h3 {
+  font-size: 1.6rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* 表單樣式 - 與小卡片風格對齊 */
+.two-column-layout form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 表單欄位樣式 */
+.form-field {
+  margin-bottom: 1.5rem;
+}
+
+.field-label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.3px;
+}
+
+.field-input {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: all 0.3s;
+  background: white;
+  color: #333;
+}
+
+.field-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.field-input:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* 下拉選單樣式 */
+select.field-input {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+}
+
+select.field-input:hover:not(:disabled) {
+  border-color: #667eea;
+}
+
+select.field-input option {
+  padding: 0.5rem;
+}
+
+/* 新增商家表單 */
+.add-merchant-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* 資訊顯示區 */
+.info-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e0e0e0;
+}
+
+.info-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #666;
+  letter-spacing: 0.3px;
+}
+
+.info-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.debt-highlight {
+  color: #e74c3c;
+}
+
+/* 快速操作區 */
+.quick-actions {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, #fff9e6 0%, #fffbf0 100%);
+  border-radius: 12px;
+  border: 1px solid #ffc107;
+}
+
+.quick-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 0.75rem;
+}
+
+.quick-buttons {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* 舊的表單樣式 - 保留給其他頁面使用 */
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-weight: 500;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="password"] {
+  padding: 0.85rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  font-family: inherit;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="password"]:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+input:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn-quick {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  background: white;
+  border: 2px solid #ffc107;
+  border-radius: 8px;
+  color: #f57c00;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 0.9rem;
+  min-width: 100px;
+}
+
+.btn-quick:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+  color: white;
+  border-color: #ffc107;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+}
+
+.btn-quick:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* 按鈕樣式 */
+.btn {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
+}
+
+.btn-success:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(17, 153, 142, 0.4);
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(240, 147, 251, 0.4);
+}
+
+/* 消費記錄表格 */
+.records-table-container {
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+
+.records-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.records-table thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.records-table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.records-table tbody tr {
+  border-bottom: 1px solid #e0e0e0;
+  transition: background 0.2s;
+}
+
+.records-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.records-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.records-table td {
+  padding: 1rem;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.address-code {
+  background: #f5f5f5;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  color: #667eea;
+}
+
+.merchant-name {
+  font-weight: 600;
+  color: #333;
+  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.amount-cell {
+  font-weight: 600;
+  color: #e74c3c;
+}
+
+/* 狀態訊息 */
+.status {
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  margin-top: 1rem;
+  font-weight: 500;
+  text-align: center;
+  background: #e3f2fd;
+  color: #1976d2;
+  border-left: 4px solid #1976d2;
+}
+
+.status.success {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-left-color: #2e7d32;
+}
+
+.status.error {
+  background: #ffebee;
+  color: #c62828;
+  border-left-color: #c62828;
+}
+
+/* 行內表單 */
+.inline-form {
+  display: flex;
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.inline-form input {
+  flex: 1;
+}
+
+.inline-form button {
+  flex-shrink: 0;
+}
+
+/* 小提示 */
+.small {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 0.5rem;
+}
+
+/* 說明區塊 */
+.note {
+  background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-top: 2rem;
+  border-left: 5px solid #e17055;
+}
+
+.note p {
+  margin: 0 0 0.75rem 0;
+  font-weight: 600;
+  color: #2d3436;
+  font-size: 1.05rem;
+}
+
+.note ul {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.note li {
+  margin-bottom: 0.5rem;
+  color: #2d3436;
+  line-height: 1.6;
+}
+
+.note li:last-child {
+  margin-bottom: 0;
+}
+
+/* 響應式設計 */
+
+/* 大螢幕優化 */
+@media (min-width: 1400px) {
+  .creditcard-spend-page {
+    padding: 3rem 4rem;
+  }
+
+  .two-column-layout {
+    gap: 2rem;
+  }
+
+  .two-column-layout .card {
+    padding: 3rem;
+  }
+
+  .two-column-layout .card h3 {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 968px) {
+  .creditcard-spend-page {
+    padding: 1.5rem;
+  }
+
+  .page-header h1 {
+    font-size: 2rem;
+  }
+
+  .page-header p {
+    font-size: 1rem;
+  }
+
+  .credit-info-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .balance-info {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .two-column-layout {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .info-value {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .creditcard-spend-page {
+    padding: 1rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .card {
+    padding: 1.5rem;
+  }
+
+  .card h3 {
+    font-size: 1.3rem;
+  }
+
+  .info-value {
+    font-size: 1.5rem;
+  }
+
+  .inline-form {
+    flex-direction: column;
+  }
+
+  .records-table th,
+  .records-table td {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .quick-repay {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .page-header p {
+    font-size: 0.9rem;
+  }
+
+  .card {
+    padding: 1rem;
+  }
+
+  .card h3 {
+    font-size: 1.2rem;
+  }
+
+  .info-value {
+    font-size: 1.3rem;
+  }
+
+  .balance-number {
+    font-size: 1.3rem;
+  }
+
+  .balance-unit {
+    font-size: 0.75rem;
+  }
+
+  .btn {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .note {
+    padding: 1rem;
+  }
+
+  .note p {
+    font-size: 0.95rem;
+  }
+
+  .note li {
+    font-size: 0.85rem;
+  }
+}

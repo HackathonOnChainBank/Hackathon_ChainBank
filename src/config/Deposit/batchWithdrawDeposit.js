@@ -1,0 +1,27 @@
+import { ethers } from "ethers";
+import readline from "readline";
+import dotenv from "dotenv";
+import { ABI } from "../DepositProduct_ABI.js";
+dotenv.config();
+
+const provider = new ethers.JsonRpcProvider(process.env.VITE_RPC_URL);
+const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+const contractAddress = process.env.VITE_DEPOSIT_CONTRACT_ADDRESS;
+const contract = new ethers.Contract(contractAddress, ABI, wallet);
+
+const rl = readline.createInterface({input: process.stdin, output: process.stdout});
+const ask = q => new Promise(res=>rl.question(q, res));
+
+async function main() {
+    const addresses = (await ask("輸入用戶地址陣列（逗號分隔）: ")).split(",");
+    const depositIds = (await ask("輸入對應的定存編號陣列（逗號分隔）: ")).split(",").map(x => x.trim());
+    rl.close();
+    try {
+        const tx = await contract.batchWithdrawDeposit(addresses, depositIds);
+        await tx.wait();
+        console.log("批量定存領取成功，Tx:", tx.hash);
+    } catch (err) {
+        console.error("批量定存領取失敗:", err.reason || err.message);
+    }
+}
+main();

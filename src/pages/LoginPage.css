@@ -1,0 +1,378 @@
+.login-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-container {
+  max-width: 600px;
+  width: 100%;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.login-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 40px;
+  text-align: center;
+}
+
+.login-header h1 {
+  margin: 0 0 12px 0;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.login-header p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 16px;
+}
+
+/* Login Form Section */
+.login-form-section {
+  padding: 40px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.form-group input {
+  padding: 14px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: all 0.2s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-group input:disabled {
+  background: #f8f9fa;
+  cursor: not-allowed;
+}
+
+.form-group small {
+  color: #666;
+  font-size: 13px;
+}
+
+.form-info {
+  background: #f0f7ff;
+  border-left: 4px solid #667eea;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.form-info h3 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  color: #667eea;
+}
+
+.form-info ul {
+  margin: 0;
+  padding-left: 20px;
+  color: #666;
+}
+
+.form-info li {
+  margin-bottom: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.form-info a {
+  color: #667eea;
+  text-decoration: underline;
+}
+
+.error-message {
+  background: #fee;
+  border: 1px solid #fcc;
+  color: #c33;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+/* Buttons */
+.btn-primary,
+.btn-secondary {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-secondary {
+  background: #f8f9fa;
+  color: #333;
+  border: 2px solid #e0e0e0;
+  width: 100%;
+}
+
+.btn-secondary:hover {
+  background: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.btn-large {
+  width: 100%;
+  padding: 16px;
+  font-size: 18px;
+}
+
+.btn-copy {
+  padding: 6px 12px;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.btn-copy:hover {
+  background: #e9ecef;
+  transform: scale(1.05);
+}
+
+.register-link {
+  margin-top: 24px;
+  text-align: center;
+  padding-top: 24px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.register-link p {
+  margin: 0 0 12px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+/* User Info Section */
+.user-info-section {
+  padding: 0 40px 40px 40px;
+}
+
+.welcome-message {
+  text-align: center;
+  padding: 32px;
+  background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+  margin: 0 -40px 32px -40px;
+}
+
+.welcome-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: white;
+  font-size: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px auto;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.welcome-message h2 {
+  margin: 0 0 8px 0;
+  color: #065f46;
+  font-size: 28px;
+}
+
+.welcome-message p {
+  margin: 0;
+  color: #047857;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.user-details h3 {
+  margin: 24px 0 16px 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.info-card {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+  border: 1px solid #e0e0e0;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #666;
+  font-size: 14px;
+  min-width: 100px;
+}
+
+.info-value {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.info-value span {
+  color: #333;
+  font-size: 14px;
+}
+
+.info-value code {
+  background: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #d63384;
+  border: 1px solid #dee2e6;
+  font-family: 'Courier New', monospace;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.info-value code.small {
+  font-size: 11px;
+  word-break: break-all;
+}
+
+.network-badge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.connect-info {
+  background: #f0f7ff;
+  border-left: 4px solid #667eea;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.connect-info h3 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  color: #667eea;
+}
+
+.connect-info p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.action-buttons button {
+  flex: 1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .login-page {
+    padding: 20px 10px;
+  }
+
+  .login-container {
+    border-radius: 12px;
+  }
+
+  .login-header {
+    padding: 30px 20px;
+  }
+
+  .login-header h1 {
+    font-size: 24px;
+  }
+
+  .login-form-section,
+  .user-info-section {
+    padding: 30px 20px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .info-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .info-value {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .info-value code {
+    max-width: 100%;
+  }
+}
