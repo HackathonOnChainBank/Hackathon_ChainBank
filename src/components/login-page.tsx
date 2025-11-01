@@ -1,4 +1,4 @@
-import image_550763c6bd405bb0e462640703893cfcc371a345 from 'figma:asset/550763c6bd405bb0e462640703893cfcc371a345.png';
+// import image_550763c6bd405bb0e462640703893cfcc371a345 from 'figma:asset/550763c6bd405bb0e462640703893cfcc371a345.png';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
@@ -225,7 +225,7 @@ export function LoginPage() {
               {/* QR Code placeholder */}
               <div className="w-full aspect-square max-w-[200px] rounded-xl overflow-hidden border-2 border-purple-500/30 bg-slate-800">
                 <ImageWithFallback
-                  src={image_550763c6bd405bb0e462640703893cfcc371a345}
+                  // src={image_550763c6bd405bb0e462640703893cfcc371a345}
                   alt="QR Code"
                   className="w-full h-full object-cover"
                 />
