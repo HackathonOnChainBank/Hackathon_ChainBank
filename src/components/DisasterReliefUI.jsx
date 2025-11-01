@@ -2,22 +2,27 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useAccount } from 'wagmi'
 import { ethers } from 'ethers'
 import disasterAbi from '../contract/disasterAbi'
+import { useAuth } from '../contexts/AuthContext'
 import './DisasterReliefUI.css'
 
 export default function DisasterReliefUI() {
   const { address, isConnected } = useAccount()
+  const { getAllUsers } = useAuth()
 
   const [status, setStatus] = useState('idle')
   const [verificationResult, setVerificationResult] = useState(null)
-  const [recipient, setRecipient] = useState('')
+  const [recipientUserId, setRecipientUserId] = useState('') // 改為存儲用戶 ID
+  const [recipientAddress, setRecipientAddress] = useState('') // 實際的錢包地址
   const [amount, setAmount] = useState('')
   const [txHash, setTxHash] = useState(null)
   const [txStatus, setTxStatus] = useState(null) // pending | confirmed | failed | null
   const [txDetails, setTxDetails] = useState(null) // { blockNumber, confirmations }
+  const [availablePrograms, setAvailablePrograms] = useState([])
+  const [selectedProgram, setSelectedProgram] = useState(null)
   const txPollRef = useRef(null)
 
   // Celo Sepolia 合約地址
-  const CONTRACT_ADDRESS = '0x37ACE2979C7d6c395AF0D3f400a878fA858b724a'
+  const CONTRACT_ADDRESS = '0xba163d8cfc4918c928970443cb78930b3c6ab1d6' // DisasterRelief 合約
 
   async function verifyWithSelf() {
     setStatus('opening_self')
@@ -41,19 +46,52 @@ export default function DisasterReliefUI() {
         if (event.data && event.data.type === 'SELF_VERIFICATION_SUCCESS') {
           console.log('✓ Verification successful! Data:', event.data.data)
           
+          const walletAddress = event.data.data.userIdentifier || address
+          console.log('💼 驗證成功')
+          
+          // 從 localStorage 查找對應的用戶 ID
+          let users = []
+          let matchedUser = null
+          try {
+            users = getAllUsers()
+            console.log('👥 All Users:', users)
+            matchedUser = users.find(user => user.walletAddress?.toLowerCase() === walletAddress.toLowerCase())
+            console.log('🎯 Matched User:', matchedUser)
+          } catch (error) {
+            console.error('Error getting users:', error)
+          }
+          
+          const userId = matchedUser ? matchedUser.userId : walletAddress
+          const displayName = matchedUser ? `${matchedUser.fullName} (${matchedUser.userId})` : userId
+          
+          console.log('📝 User ID:', userId, 'Display Name:', displayName)
+          
           setVerificationResult({
             verified: true,
             timestamp: event.data.data.timestamp,
             nullifier: event.data.data.nullifier || '0x' + '01'.repeat(32),
-            userIdentifier: event.data.data.userIdentifier || '0x' + '02'.repeat(20),
+            userIdentifier: walletAddress,
+            userId: userId,
+            displayName: displayName,
             proof: event.data.data.proof || 'SELF_PROOF_FROM_SERVICE'
           })
+          
+          // 自動帶入用戶 ID 和對應的錢包地址
+          setRecipientUserId(userId)
+          setRecipientAddress(walletAddress)
           
           setStatus('verified')
           window.removeEventListener('message', handleMessage)
           
+          console.log('🚀 即將載入救助計劃...')
+          // 載入可用的救助計劃
+          setTimeout(() => {
+            console.log('⏰ 開始執行 loadAvailablePrograms')
+            loadAvailablePrograms(walletAddress)
+          }, 500)
+          
           // 通知使用者
-          alert('✓ 身份驗證成功！現在可以申請撥款了。')
+          alert(`✓ 身份驗證成功！已自動帶入您的用戶 ID: ${userId}`)
         }
       }
 
@@ -79,40 +117,155 @@ export default function DisasterReliefUI() {
     }
   }
 
-  async function requestPayout() {
-    if (!isConnected) {
-      setStatus('請先連接錢包')
-      return
+  // 載入可用的救助計劃
+  async function loadAvailablePrograms(userAddress) {
+    console.log('🔄 開始載入救助計劃, userAddress:', userAddress)
+    try {
+      if (!window.ethereum) {
+        console.error('❌ 找不到 window.ethereum')
+        return
+      }
+      
+      const provider = new ethers.BrowserProvider(window.ethereum)
+      const signer = await provider.getSigner()
+      
+      // 獲取當前登入用戶的錢包地址
+      let currentUser = null
+      try {
+        const userData = localStorage.getItem('chainbank_current_user')
+        if (userData) {
+          currentUser = JSON.parse(userData)
+        }
+      } catch (err) {
+        console.warn('無法讀取當前用戶資料:', err)
+      }
+      
+      const checkAddress = currentUser?.walletAddress || userAddress
+      
+      console.log('👤 當前登入用戶 ID:', currentUser?.userId)
+      console.log('💼 驗證檢查中...')
+      
+      // 使用 DisasterRelief ABI
+      const { DISASTER_RELIEF_ABI } = await import('../config/DisasterRelief_ABI')
+      const contract = new ethers.Contract(CONTRACT_ADDRESS, DISASTER_RELIEF_ABI, signer)
+      
+      const programCount = await contract.programCounter()
+      console.log('📊 計劃總數:', programCount.toString())
+      
+      const programs = []
+      const count = Number(programCount)
+      
+      for (let i = 0; i < count; i++) {
+        console.log(`檢查計劃 ${i}...`)
+        const info = await contract.getProgramInfo(i)
+        // 使用當前登入用戶的錢包地址來檢查是否已領取
+        const hasClaimed = await contract.hasClaimed(i, checkAddress)
+        
+        console.log(`計劃 ${i} 資訊:`, {
+          name: info[0],
+          totalBudget: ethers.formatUnits(info[1], 18),
+          amountPerPerson: ethers.formatUnits(info[2], 18),
+          isActive: info[6],
+          hasClaimed: hasClaimed
+        })
+        
+        // 只顯示啟用中且未領取的計劃
+        if (info[6] && !hasClaimed) { // info[6] = isActive
+          programs.push({
+            id: i,
+            name: info[0],
+            amountPerPerson: ethers.formatUnits(info[2], 18),
+            remainingBudget: ethers.formatUnits(info[5], 18),
+            isActive: info[6]
+          })
+          console.log(`✅ 計劃 ${i} 已加入可領取列表`)
+        } else {
+          console.log(`⏭️ 計劃 ${i} 跳過 (已領取或未啟用)`)
+        }
+      }
+      
+      console.log('📋 可用計劃列表:', programs)
+      setAvailablePrograms(programs)
+      
+      // 如果只有一個計劃，自動選擇並設定金額
+      if (programs.length === 1) {
+        setSelectedProgram(programs[0])
+        setAmount(programs[0].amountPerPerson)
+        console.log('🎯 自動選擇唯一計劃:', programs[0])
+      } else if (programs.length === 0) {
+        console.warn('⚠️ 沒有可用的救助計劃')
+      }
+    } catch (error) {
+      console.error('❌ 載入救助計劃失敗:', error)
+      setStatus('載入計劃失敗: ' + error.message)
     }
+  }
+
+  async function requestPayout() {
     if (!verificationResult) {
       setStatus('請先完成身份驗證')
       return
     }
-    if (!recipient || !ethers.isAddress(recipient)) {
-      setStatus('請輸入有效的收款地址')
-      return
-    }
-    if (!amount || parseFloat(amount) <= 0) {
-      setStatus('請輸入有效的撥款金額')
+    if (!selectedProgram) {
+      setStatus('請選擇救助計劃')
       return
     }
 
     setStatus('sending_tx')
 
     try {
-      if (!window.ethereum) throw new Error('找不到錢包')
-      const provider = new ethers.BrowserProvider(window.ethereum)
-      const signer = await provider.getSigner()
+      // 獲取當前登入用戶的 shortUuid
+      const currentUserShortUuid = localStorage.getItem('chainbank_current_user')
+      console.log('📦 當前用戶 ID:', currentUserShortUuid)
+      
+      if (!currentUserShortUuid) {
+        throw new Error('找不到登入用戶資料，請先登入')
+      }
 
-      const contract = new ethers.Contract(CONTRACT_ADDRESS, disasterAbi, signer)
+      // 從 chainbank_users 中查找完整的用戶資料
+      const usersData = localStorage.getItem('chainbank_wallets')
+      if (!usersData) {
+        throw new Error('找不到用戶列表')
+      }
+      
+      const usersObj = JSON.parse(usersData)
+      console.log('📋 用戶資料類型:', typeof usersObj, Array.isArray(usersObj) ? '陣列' : '對象')
+      
+      // 直接用 shortUuid 作為 key 查找用戶
+      const currentUser = usersObj[currentUserShortUuid]
+      
+      if (!currentUser) {
+        console.error('找不到 shortUuid:', currentUserShortUuid)
+        console.error('可用的 keys:', Object.keys(usersObj))
+        throw new Error('找不到當前用戶資料')
+      }
+      
+      console.log('👤 當前用戶:', currentUser.userId, currentUser.fullName)
+      console.log('💼 用戶地址:', currentUser.address)
+      
+      if (!currentUser.address && !currentUser.walletAddress) {
+        console.error('用戶資料:', currentUser)
+        throw new Error('用戶資料不完整，缺少錢包地址')
+      }
 
-      // 將金額轉換為 Wei (假設 NTD_TOKEN 有 18 位小數)
-      const amountInWei = ethers.parseUnits(amount.toString(), 18)
+      if (!currentUser.privateKey) {
+        console.error('用戶資料:', currentUser)
+        throw new Error('用戶資料中沒有 Private Key')
+      }
 
-      // 調用 withdrawToken，傳入收款地址和金額 (to, amount) — match ABI
-      const tx = await contract.withdrawToken(
-        recipient,
-        amountInWei,
+      console.log('🔑 準備使用 Private Key 簽署交易')
+      
+      // 使用用戶的 private key 創建 wallet
+      const provider = new ethers.JsonRpcProvider('https://forno.celo-sepolia.celo-testnet.org')
+      const wallet = new ethers.Wallet(currentUser.privateKey, provider)
+
+      // 使用 DisasterRelief ABI
+      const { DISASTER_RELIEF_ABI } = await import('../config/DisasterRelief_ABI')
+      const contract = new ethers.Contract(CONTRACT_ADDRESS, DISASTER_RELIEF_ABI, wallet)
+
+      // 調用 claimRelief，只需要傳入計劃 ID
+      const tx = await contract.claimRelief(
+        selectedProgram.id,
         { gasLimit: 500000 }
       )
 
@@ -121,7 +274,7 @@ export default function DisasterReliefUI() {
       setTxStatus('pending')
       console.log('交易已提交:', tx.hash)
       console.log('撥款金額:', amount, 'NTD_TOKEN')
-      console.log('收款地址:', recipient)
+      console.log('用戶 ID:', currentUser.userId)
 
       // 啟動輪詢監控交易狀態（背景）
       monitorTransaction(tx.hash)
@@ -142,8 +295,7 @@ export default function DisasterReliefUI() {
   async function fetchTxStatus(hash) {
     if (!hash) return null
     try {
-      if (!window.ethereum) return null
-      const provider = new ethers.BrowserProvider(window.ethereum)
+      const provider = new ethers.JsonRpcProvider('https://forno.celo-sepolia.celo-testnet.org')
       const receipt = await provider.getTransactionReceipt(hash)
 
       if (!receipt) {
@@ -203,9 +355,10 @@ export default function DisasterReliefUI() {
     <div className="disaster-ui">
       <div className="status">Status: {status}</div>
 
-      <div className="wallet">
+      {/* 隱藏錢包顯示，但保留底層連接邏輯 */}
+      {/* <div className="wallet">
         <div>Connected account: {isConnected ? address : 'Not connected'}</div>
-      </div>
+      </div> */}
 
       <div className="verification">
         <h3>1. 身份驗證</h3>
@@ -218,42 +371,77 @@ export default function DisasterReliefUI() {
         {verificationResult && (
           <div className="verified-box">
             <strong>✓ 驗證成功</strong>
-            <div>Nullifier: {verificationResult.nullifier}</div>
-            <div>User ID: {verificationResult.userIdentifier}</div>
+            <div style={{ fontSize: '0.9em', color: '#666', marginTop: '8px' }}>
+              救助金將發送到您綁定的錢包地址
+            </div>
           </div>
         )}
       </div>
 
       <div className="payout">
-        <h3>2. 申請撥款</h3>
-        <p>完成身份驗證後，輸入收款地址和金額並申請撥款</p>
+        <h3>2. 選擇救助計劃</h3>
+        <p>完成身份驗證後，選擇可申請的救助計劃</p>
         
-        <label>
-          收款地址
-          <input 
-            type="text"
-            value={recipient} 
-            onChange={(e) => setRecipient(e.target.value)} 
-            placeholder="0x..." 
-            disabled={!verificationResult}
-          />
-        </label>
+        {/* 調試信息 */}
+        <div style={{ padding: '10px', background: '#f0f0f0', marginBottom: '10px', fontSize: '0.85em' }}>
+          調試: availablePrograms.length = {availablePrograms.length}, 
+          verificationResult = {verificationResult ? '✓' : '✗'},
+          selectedProgram = {selectedProgram ? '✓' : '✗'}
+        </div>
         
-        <label>
-          撥款金額 <span className="token-label">(NTD_TOKEN)</span>
-          <input 
-            type="number"
-            value={amount} 
-            onChange={(e) => setAmount(e.target.value)} 
-            placeholder="請輸入金額" 
-            min="0"
-            step="0.01"
-            disabled={!verificationResult}
-          />
-        </label>
+        {availablePrograms.length > 0 ? (
+          <div className="programs-list">
+            {availablePrograms.map((program) => (
+              <div 
+                key={program.id} 
+                className={`program-card ${selectedProgram?.id === program.id ? 'selected' : ''}`}
+                onClick={() => {
+                  setSelectedProgram(program)
+                  setAmount(program.amountPerPerson)
+                }}
+                style={{ 
+                  cursor: 'pointer',
+                  padding: '15px',
+                  border: selectedProgram?.id === program.id ? '2px solid #4CAF50' : '1px solid #ddd',
+                  borderRadius: '8px',
+                  marginBottom: '10px',
+                  backgroundColor: selectedProgram?.id === program.id ? '#f0f8f0' : '#fff'
+                }}
+              >
+                <h4 style={{ margin: '0 0 8px 0' }}>{program.name}</h4>
+                <div style={{ fontSize: '0.95em', color: '#555' }}>
+                  <div>💰 可領取金額: <strong>{parseFloat(program.amountPerPerson).toFixed(2)} NTD</strong></div>
+                  <div>📊 剩餘預算: {parseFloat(program.remainingBudget).toFixed(2)} NTD</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : verificationResult ? (
+          <div style={{ padding: '20px', background: '#fff3cd', borderRadius: '8px', marginBottom: '15px' }}>
+            ⚠️ 目前沒有可申請的救助計劃，或您已領取過所有計劃
+          </div>
+        ) : null}
         
-        <button onClick={requestPayout} disabled={!verificationResult || !recipient || !amount || status === 'sending_tx'}>
-          {status === 'sending_tx' ? '處理中...' : '申請撥款'}
+        {selectedProgram && (
+          <div style={{ marginTop: '20px' }}>
+            <label>
+              領取金額 <span className="token-label">(NTD)</span>
+              <input 
+                type="text"
+                value={amount} 
+                disabled={true}
+                style={{ backgroundColor: '#f5f5f5', fontWeight: 'bold' }}
+              />
+            </label>
+          </div>
+        )}
+        
+        <button 
+          onClick={requestPayout} 
+          disabled={!verificationResult || !selectedProgram || status === 'sending_tx'}
+          style={{ marginTop: '15px' }}
+        >
+          {status === 'sending_tx' ? '處理中...' : '領取救助金'}
         </button>
         
         {txHash && (

@@ -1,4 +1,4 @@
-// File: /Users/seanwang/Hackathon_ChainBank/SelfFrontEnd/app/app/page.tsx
+// File: D:\Code\GitHub Desktop\figma2\Hackathon_ChainBank\SelfFrontEnd\app\app\page.tsx
 import * as entry from '../../../app/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

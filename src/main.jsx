@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit'
 import { AuthProvider } from './contexts/AuthContext'
 import { config } from './config/wagmi'
-import './index.css'
+import './index_.css'
 import '@rainbow-me/rainbowkit/styles.css'
 import App from './App.jsx'
 

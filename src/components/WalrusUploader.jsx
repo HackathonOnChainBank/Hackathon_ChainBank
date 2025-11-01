@@ -4,7 +4,7 @@ import { ethers } from 'ethers'
 import { proofAbi, PROOF_CONTRACT_ADDRESS } from '../config/proofAbi'
 import './WalrusUploader.css'
 
-// 帶 fallback 的圖片組件
+// 帶 fallback 的圖片組件// 目前都是測試鏈，都存在本地並無後端實際存儲
 function ImageWithFallback({ blobId, getAllPossibleUrls }) {
   const [currentUrlIndex, setCurrentUrlIndex] = useState(0)
   const [allUrls] = useState(() => getAllPossibleUrls(blobId).map(item => item.url))
@@ -63,16 +63,37 @@ export default function WalrusUploader() {
   const [previewBlobId, setPreviewBlobId] = useState(null)
 
   // Walrus API endpoints
+  // 注意：Walrus API 可能會變更，如果 404 請檢查官方文檔https://publisher.walrus-testnet.walrus.space
   const WALRUS_PUBLISHER_ENDPOINT = 'https://publisher.walrus-testnet.walrus.space'
   const WALRUS_AGGREGATOR_ENDPOINT = 'https://aggregator.walrus-testnet.walrus.space'
   // 替代讀取端點（使用 Walrus Sites）
-  const WALRUS_SITES_ENDPOINT = 'https://blob.store'
+  const WALRUS_SITES_ENDPOINT = 'https://aggregator.testnet.walrus.mirai.cloud'
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0]
     if (selectedFile) {
       setFile(selectedFile)
       setUploadStatus(`已選擇: ${selectedFile.name} (${(selectedFile.size / 1024).toFixed(2)} KB)`)
+    }
+  }
+
+  const testWalrusConnection = async () => {
+    setUploadStatus('正在測試 Walrus 連線...')
+    try {
+      const response = await fetch(`${WALRUS_PUBLISHER_ENDPOINT}/v1/blobs`, {
+        method: 'PUT',
+      })
+      
+      if (response.ok) {
+        const info = await response.json()
+        console.log('Walrus 服務資訊:', info)
+        setUploadStatus('✓ Walrus 服務連線正常')
+      } else {
+        setUploadStatus(`⚠️ Walrus 回應異常: ${response.status} ${response.statusText}`)
+      }
+    } catch (error) {
+      console.error('連線測試失敗:', error)
+      setUploadStatus(`✗ 無法連線到 Walrus: ${error.message}`)
     }
   }
 
@@ -85,33 +106,79 @@ export default function WalrusUploader() {
     setUploading(true)
     setUploadStatus('正在上傳到 Walrus...')
 
+    // 嘗試多個可能的端點
+    const endpoints = [
+      `${WALRUS_PUBLISHER_ENDPOINT}/v1/blobs`,
+      `${WALRUS_PUBLISHER_ENDPOINT}/v1/store`,
+      `${WALRUS_PUBLISHER_ENDPOINT}/store?epochs=5`,
+      `${WALRUS_PUBLISHER_ENDPOINT}/store`,
+    ]
+
+    let lastError = null
+
     try {
-      // 使用 PUT 請求上傳檔案到 Walrus
-      const formData = new FormData()
-      formData.append('file', file)
+      for (let i = 0; i < endpoints.length; i++) {
+        const endpoint = endpoints[i]
+        
+        try {
+          console.log(`嘗試端點 ${i + 1}/${endpoints.length}:`, endpoint)
+          setUploadStatus(`正在嘗試端點 ${i + 1}/${endpoints.length}...`)
 
-      const response = await fetch(`${WALRUS_PUBLISHER_ENDPOINT}/v1/store`, {
-        method: 'PUT',
-        body: file,
-        headers: {
-          'Content-Type': file.type || 'application/octet-stream',
+          const response = await fetch(endpoint, {
+            method: 'PUT',
+            body: file,
+            headers: {
+              'Content-Type': file.type || 'application/octet-stream',
+            }
+          })
+
+          console.log('Walrus 回應狀態:', response.status, response.statusText)
+
+          if (response.status === 404) {
+            console.log('404 - 端點不存在，嘗試下一個...')
+            lastError = new Error(`端點 ${endpoint} 不存在 (404)`)
+            continue
+          }
+
+          if (!response.ok) {
+            const errorText = await response.text()
+            console.error('Walrus 錯誤詳情:', errorText)
+            lastError = new Error(`上傳失敗 (${response.status}): ${errorText}`)
+            continue
+          }
+
+          // 成功！
+          const result = await response.json()
+          console.log('✓ Walrus 回應:', result)
+          
+          setWalrusResponse(result)
+          setUploadStatus(`✓ 上傳成功！Blob ID: ${result.newlyCreated?.blobObject?.blobId || result.alreadyCertified?.blobId || 'N/A'}`)
+          
+          return result
+        } catch (innerError) {
+          console.error(`端點 ${i + 1} 錯誤:`, innerError)
+          lastError = innerError
+          continue
         }
-      })
-
-      if (!response.ok) {
-        throw new Error(`Walrus 上傳失敗: ${response.statusText}`)
       }
 
-      const result = await response.json()
-      console.log('Walrus 回應:', result)
+      // 所有端點都失敗
+      throw lastError || new Error('所有端點都無法連線')
       
-      setWalrusResponse(result)
-      setUploadStatus(`✓ 上傳成功！Blob ID: ${result.newlyCreated?.blobObject?.blobId || result.alreadyCertified?.blobId || 'N/A'}`)
-      
-      return result
     } catch (error) {
-      console.error('上傳錯誤:', error)
-      setUploadStatus(`✗ 上傳失敗: ${error.message}`)
+      console.error('上傳錯誤完整資訊:', error)
+      console.error('錯誤訊息:', error.message)
+      
+      let friendlyMessage = error.message
+      if (error.message.includes('Failed to fetch')) {
+        friendlyMessage = '網路連線失敗，Walrus testnet 可能暫時無法使用'
+      } else if (error.message.includes('CORS')) {
+        friendlyMessage = 'CORS 錯誤，Walrus 服務暫時不可用'
+      } else if (error.message.includes('404')) {
+        friendlyMessage = '所有 API 端點都返回 404，Walrus testnet 可能已關閉或 API 已更新'
+      }
+      
+      setUploadStatus(`✗ 上傳失敗: ${friendlyMessage}`)
       return null
     } finally {
       setUploading(false)
@@ -274,6 +341,20 @@ export default function WalrusUploader() {
         {/* 錢包狀態 */}
         <div className="wallet-status">
           <strong>錢包狀態:</strong> {isConnected ? `已連接 (${address?.slice(0, 6)}...${address?.slice(-4)})` : '未連接'}
+          <button 
+            onClick={testWalrusConnection}
+            style={{
+              marginLeft: '12px',
+              padding: '6px 12px',
+              fontSize: '13px',
+              cursor: 'pointer',
+              borderRadius: '6px',
+              border: '1px solid #ddd',
+              background: '#f8f9fa'
+            }}
+          >
+            🔌 測試 Walrus 連線
+          </button>
         </div>
 
         {/* 檔案選擇 */}
@@ -331,32 +412,6 @@ export default function WalrusUploader() {
               <div className="response-item">
                 <strong>Blob ID:</strong>
                 <code>{walrusResponse.newlyCreated?.blobObject?.blobId || walrusResponse.alreadyCertified?.blobId}</code>
-              </div>
-              <div className="response-item">
-                <strong>可用的讀取 URL (點擊測試):</strong>
-                <div style={{marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px'}}>
-                  {getAllPossibleUrls(walrusResponse.newlyCreated?.blobObject?.blobId || walrusResponse.alreadyCertified?.blobId).map((item, idx) => (
-                    <div key={idx} style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                      <a 
-                        href={item.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        style={{fontSize: '13px', flex: 1}}
-                      >
-                        {item.name}: {item.url.slice(0, 60)}...
-                      </a>
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText(item.url)
-                          alert(`已複製 ${item.name} URL`)
-                        }}
-                        style={{padding: '4px 8px', fontSize: '12px', cursor: 'pointer'}}
-                      >
-                        📋
-                      </button>
-                    </div>
-                  ))}
-                </div>
               </div>
               {walrusResponse.newlyCreated?.blobObject?.storage?.url && (
                 <div className="response-item">
