@@ -4,7 +4,7 @@ import { ethers } from 'ethers'
 import { proofAbi, PROOF_CONTRACT_ADDRESS } from '../config/proofAbi'
 import './WalrusUploader.css'
 
-// 帶 fallback 的圖片組件
+// 帶 fallback 的圖片組件// 目前都是測試鏈，都存在本地並無後端實際存儲
 function ImageWithFallback({ blobId, getAllPossibleUrls }) {
   const [currentUrlIndex, setCurrentUrlIndex] = useState(0)
   const [allUrls] = useState(() => getAllPossibleUrls(blobId).map(item => item.url))
