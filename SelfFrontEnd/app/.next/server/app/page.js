@@ -12,10 +12,10 @@ exports.id = "app/page";
 exports.ids = ["app/page"];
 exports.modules = {
 
-/***/ "(ssr)/./node_modules/@selfxyz/qrcode/node_modules/@anon-aadhaar/core/dist sync recursive":
-/*!*********************************************************************************!*\
-  !*** ./node_modules/@selfxyz/qrcode/node_modules/@anon-aadhaar/core/dist/ sync ***!
-  \*********************************************************************************/
+/***/ "(ssr)/./node_modules/@anon-aadhaar/core/dist sync recursive":
+/*!****************************************************!*\
+  !*** ./node_modules/@anon-aadhaar/core/dist/ sync ***!
+  \****************************************************/
 /***/ ((module) => {
 
 function webpackEmptyContext(req) {
@@ -25,7 +25,7 @@ function webpackEmptyContext(req) {
 }
 webpackEmptyContext.keys = () => ([]);
 webpackEmptyContext.resolve = webpackEmptyContext;
-webpackEmptyContext.id = "(ssr)/./node_modules/@selfxyz/qrcode/node_modules/@anon-aadhaar/core/dist sync recursive";
+webpackEmptyContext.id = "(ssr)/./node_modules/@anon-aadhaar/core/dist sync recursive";
 module.exports = webpackEmptyContext;
 
 /***/ }),
@@ -564,7 +564,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 var __webpack_require__ = require("../webpack-runtime.js");
 __webpack_require__.C(exports);
 var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s = moduleId))
-var __webpack_exports__ = __webpack_require__.X(0, ["vendor-chunks/next","vendor-chunks/@selfxyz","vendor-chunks/i18n-iso-countries","vendor-chunks/wasmcurves","vendor-chunks/engine.io-client","vendor-chunks/pako","vendor-chunks/elliptic","vendor-chunks/ws","vendor-chunks/hash.js","vendor-chunks/ethers","vendor-chunks/socket.io-client","vendor-chunks/pkijs","vendor-chunks/@noble","vendor-chunks/socket.io-parser","vendor-chunks/bytestreamjs","vendor-chunks/uuid","vendor-chunks/@swc","vendor-chunks/engine.io-parser","vendor-chunks/@openpassport","vendor-chunks/@zk-email","vendor-chunks/@iden3","vendor-chunks/react-spinners","vendor-chunks/json-bigint","vendor-chunks/ejs","vendor-chunks/blake2b-wasm","vendor-chunks/snarkjs","vendor-chunks/r1csfile","vendor-chunks/circom_runtime","vendor-chunks/utf-8-validate","vendor-chunks/node-gyp-build","vendor-chunks/bufferutil","vendor-chunks/inherits","vendor-chunks/qrcode.react","vendor-chunks/@socket.io","vendor-chunks/wasmbuilder","vendor-chunks/fastfile","vendor-chunks/xmlhttprequest-ssl","vendor-chunks/web-worker","vendor-chunks/supports-color","vendor-chunks/pvutils","vendor-chunks/pvtsutils","vendor-chunks/nanoassert","vendor-chunks/ms","vendor-chunks/minimalistic-crypto-utils","vendor-chunks/minimalistic-assert","vendor-chunks/lottie-web","vendor-chunks/lottie-react","vendor-chunks/localforage","vendor-chunks/js-sha512","vendor-chunks/js-sha3","vendor-chunks/js-sha256","vendor-chunks/js-sha1","vendor-chunks/hmac-drbg","vendor-chunks/has-flag","vendor-chunks/diacritics","vendor-chunks/brorand","vendor-chunks/bn.js","vendor-chunks/bignumber.js","vendor-chunks/asn1js","vendor-chunks/@pcd"], () => (__webpack_exec__("(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader.js?name=app%2Fpage&page=%2Fpage&appPaths=%2Fpage&pagePath=private-next-app-dir%2Fpage.tsx&appDir=D%3A%5CCode%5CGitHub%20Desktop%5Cfigma2%5CHackathon_ChainBank%5CSelfFrontEnd%5Capp%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CCode%5CGitHub%20Desktop%5Cfigma2%5CHackathon_ChainBank%5CSelfFrontEnd%5Capp&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D!")));
+var __webpack_exports__ = __webpack_require__.X(0, ["vendor-chunks/next","vendor-chunks/i18n-iso-countries","vendor-chunks/@selfxyz","vendor-chunks/wasmcurves","vendor-chunks/engine.io-client","vendor-chunks/@anon-aadhaar","vendor-chunks/pako","vendor-chunks/elliptic","vendor-chunks/ws","vendor-chunks/hash.js","vendor-chunks/ethers","vendor-chunks/socket.io-client","vendor-chunks/pkijs","vendor-chunks/@noble","vendor-chunks/socket.io-parser","vendor-chunks/bytestreamjs","vendor-chunks/uuid","vendor-chunks/@swc","vendor-chunks/engine.io-parser","vendor-chunks/@openpassport","vendor-chunks/@zk-email","vendor-chunks/@iden3","vendor-chunks/react-spinners","vendor-chunks/json-bigint","vendor-chunks/ejs","vendor-chunks/blake2b-wasm","vendor-chunks/snarkjs","vendor-chunks/r1csfile","vendor-chunks/circom_runtime","vendor-chunks/utf-8-validate","vendor-chunks/node-gyp-build","vendor-chunks/bufferutil","vendor-chunks/inherits","vendor-chunks/qrcode.react","vendor-chunks/@socket.io","vendor-chunks/wasmbuilder","vendor-chunks/fastfile","vendor-chunks/xmlhttprequest-ssl","vendor-chunks/web-worker","vendor-chunks/supports-color","vendor-chunks/pvutils","vendor-chunks/pvtsutils","vendor-chunks/nanoassert","vendor-chunks/ms","vendor-chunks/minimalistic-crypto-utils","vendor-chunks/minimalistic-assert","vendor-chunks/lottie-web","vendor-chunks/lottie-react","vendor-chunks/localforage","vendor-chunks/js-sha512","vendor-chunks/js-sha3","vendor-chunks/js-sha256","vendor-chunks/js-sha1","vendor-chunks/hmac-drbg","vendor-chunks/has-flag","vendor-chunks/diacritics","vendor-chunks/brorand","vendor-chunks/bn.js","vendor-chunks/bignumber.js","vendor-chunks/asn1js","vendor-chunks/@pcd"], () => (__webpack_exec__("(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader.js?name=app%2Fpage&page=%2Fpage&appPaths=%2Fpage&pagePath=private-next-app-dir%2Fpage.tsx&appDir=D%3A%5CCode%5CGitHub%20Desktop%5Cfigma2%5CHackathon_ChainBank%5CSelfFrontEnd%5Capp%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CCode%5CGitHub%20Desktop%5Cfigma2%5CHackathon_ChainBank%5CSelfFrontEnd%5Capp&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D!")));
 module.exports = __webpack_exports__;
 
 })();
