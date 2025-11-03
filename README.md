@@ -11,5 +11,4 @@ Run `npm run dev` to start the development server.
 ## TO-DO
 
 1. 註冊後跳轉頁面
-2. 災難救助認證後的領取，認證頁面不要顯示地址
-3. 文字顏色、版面設計
+2. 文字顏色、版面設計

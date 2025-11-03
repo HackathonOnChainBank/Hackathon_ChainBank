@@ -176,15 +176,15 @@ export default function Home() {
           >
             Open Self App
           </button>
-
-
         </div>
-        <div className="flex flex-col items-center gap-2 mt-2">
+
+        {/* 註解掉或移除地址顯示區塊 */}
+        {/* <div className="flex flex-col items-center gap-2 mt-2">
           <span className="text-gray-500 text-xs uppercase tracking-wide">User Address</span>
           <div className="bg-gray-100 rounded-md px-3 py-2 w-full text-center break-all text-sm font-mono text-gray-800 border border-gray-200">
             {userId ? userId : <span className="text-gray-400">Not connected</span>}
           </div>
-        </div>
+        </div> */}
 
         {/* Toast notification */}
         {showToast && (
