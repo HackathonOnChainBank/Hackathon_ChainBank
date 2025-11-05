@@ -226,14 +226,55 @@ export function CreditCardApplyPage() {
       const adminAddress = adminSigner.address;
       const files = await walrusContract.getAllFiles(adminAddress);
       
-      console.log('管理員上傳的檔案:', files);
+      console.log('管理員上傳的檔案數量:', files.length);
       
-      // 過濾出圖片類型
-      const imageFiles = files.filter((f: any) => f.fileType.startsWith('image/'));
+      const currentTime = Math.floor(Date.now() / 1000);
+      console.log('當前時間:', new Date(currentTime * 1000).toLocaleString('zh-TW'));
+      
+      // 過濾圖片並檢查過期（上傳時間 + 24 小時）
+      const imageFiles = files.filter((f: any) => {
+        const isImage = f.fileType && f.fileType.startsWith('image/');
+        
+        if (!isImage) return false;
+        
+        try {
+          // 將 timestamp 轉換為數字（秒）
+          const uploadTime = parseInt(f.timestamp.toString());
+          
+          // 計算過期時間 = 上傳時間 + 24 小時（86400 秒）
+          const expiryTime = uploadTime + 86400;
+          
+          console.log(`\n圖片: ${f.dataId}`);
+          console.log(`  上傳時間: ${new Date(uploadTime * 1000).toLocaleString('zh-TW')}`);
+          console.log(`  過期時間: ${new Date(expiryTime * 1000).toLocaleString('zh-TW')}`);
+          console.log(`  當前時間: ${new Date(currentTime * 1000).toLocaleString('zh-TW')}`);
+          
+          const isNotExpired = expiryTime > currentTime;
+          const remainingHours = ((expiryTime - currentTime) / 3600).toFixed(1);
+          
+          if (isNotExpired) {
+            console.log(`  ✅ 未過期，剩餘 ${remainingHours} 小時`);
+          } else {
+            console.log(`  ❌ 已過期 ${Math.abs(remainingHours)} 小時`);
+          }
+          
+          return isNotExpired;
+        } catch (err) {
+          console.error(`處理圖片 ${f.dataId} 時發生錯誤:`, err);
+          return false;
+        }
+      });
+      
+      console.log(`\n過濾結果: ${imageFiles.length} / ${files.length} (有效/總數)`);
+      
       setCardStyles(imageFiles);
       
       if (imageFiles.length > 0) {
         setSelectedStyle(imageFiles[0].dataId);
+        setStatus(`✅ 載入了 ${imageFiles.length} 個有效的卡片樣式`);
+      } else {
+        setSelectedStyle(null);
+        setStatus('⚠️ 目前沒有可用的卡片樣式（可能已過期）');
       }
     } catch (err) {
       console.error('載入卡片樣式錯誤:', err);
